@@ -10,12 +10,12 @@ The UI component of this project was scaffolded with [Angular CLI](https://githu
 
 ### Install dependencies
 
-$ npm i
+$ yarn
 
 ### Run in Development mode
 
-$ npm run
+$ yarn start
 
 ### Package
 
-$ npm package
+$ yarn package
