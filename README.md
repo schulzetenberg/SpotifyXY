@@ -1,18 +1,21 @@
 # SpotifyXY
 
+I find myself saying "I wish Spotify could do X or Y" frequently. This is a app to solve some of those issues.
 
-## UI (Angular 5)
+SpotifyXY is a modern cross platform desktop app using electron.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
+### UI
 
-### Development server
+The UI component of this project was scaffolded with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### Install dependencies
 
-### Code scaffolding
+$ npm i
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Run in Development mode
 
-### Build
+$ npm run
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+### Package
+
+$ npm package

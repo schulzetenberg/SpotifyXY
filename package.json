@@ -1,16 +1,54 @@
 {
   "name": "spotifyxy",
-  "version": "0.0.0",
-  "license": "MIT",
+  "productName": "SpotifyXY",
+  "version": "1.0.0",
+  "main": "src/index.ts",
   "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "tslint src",
+    "ngstart": "ng serve",
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --prod",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "ngbuild": "ng build --prod",
+    "nglint": "ng lint"
   },
-  "private": true,
+  "keywords": [],
+  "author": "Jacob Schulzetenberg",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "yarn"
+      },
+      "electronWinstallerConfig": {
+        "name": "spotifyxy"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "spotifyxy"
+      }
+    }
+  },
   "dependencies": {
     "@angular/animations": "5.2.6",
     "@angular/common": "5.2.6",
@@ -22,7 +60,12 @@
     "@angular/platform-browser-dynamic": "5.2.6",
     "@angular/router": "5.2.6",
     "core-js": "2.5.3",
+    "electron-compile": "6.4.2",
+    "electron-devtools-installer": "^2.1.0",
+    "electron-squirrel-startup": "1.0.0",
+    "reflect-metadata": "^0.1.9",
     "rxjs": "5.5.6",
+    "tslib": "^1.4.0",
     "zone.js": "0.8.20"
   },
   "devDependencies": {
@@ -30,7 +73,12 @@
     "@angular/compiler-cli": "5.2.6",
     "@angular/language-service": "5.2.6",
     "@types/node": "6.0.101",
+    "babel-plugin-transform-async-to-generator": "6.24.1",
+    "babel-preset-env": "1.6.1",
+    "babel-preset-react": "6.24.1",
     "codelyzer": "4.1.0",
+    "electron-forge": "5.1.1",
+    "electron-prebuilt-compile": "1.8.2",
     "ts-node": "4.1.0",
     "tslint": "5.9.1",
     "typescript": "2.5.3"
