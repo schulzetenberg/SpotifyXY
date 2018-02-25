@@ -1,6 +1,10 @@
 <mat-card>
   <form class="sm-form" #spotifyForm="ngForm" (ngSubmit)="submitSpotifyConfig(spotifyForm)">
     <mat-form-field class="full-width">
+      <input matInput placeholder="Spotify Username" name="spotifyUsername" [(ngModel)]="spotifyUsername">
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
       <input matInput placeholder="Spotify ID" name="spotifyId" [(ngModel)]="spotifyId">
     </mat-form-field>
 
@@ -8,6 +12,10 @@
       <input matInput placeholder="Spotify Secret" name="spotifySecret" [(ngModel)]="spotifySecret">
     </mat-form-field>
 
+    <button mat-raised-button routerLink="/" type="button">
+      <i class="material-icons">cancel</i>
+      Cancel
+    </button>
     <button mat-raised-button type="submit">
       <i class="material-icons">save</i>
       Save

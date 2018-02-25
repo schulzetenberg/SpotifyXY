@@ -11,6 +11,7 @@ import { MainComponent } from './main/main.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { FooterComponent } from './footer/footer.component';
     SpotifyConfigComponent,
     MainComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    SettingsComponent
   ],
   imports: [
     NgxElectronModule,

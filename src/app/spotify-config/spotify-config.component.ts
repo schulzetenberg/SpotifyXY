@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class SpotifyConfigComponent implements OnInit {
   spotifySecret: String;
   spotifyId: String;
+  spotifyUsername: String;
 
   constructor(
     private _electronService: ElectronService,
@@ -31,6 +32,7 @@ export class SpotifyConfigComponent implements OnInit {
     let config = this.getSpotifyConfig();
     this.spotifyId = config.spotifyId;
     this.spotifySecret = config.spotifySecret;
+    this.spotifyUsername = config.spotifyUsername;
   }
 
 }

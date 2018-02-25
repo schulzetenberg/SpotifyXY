@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { enableLiveReload } from 'electron-compile';
 const fs = require('fs');
-
+const spotifyApi = require('../node/spotify-api');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null;
@@ -63,4 +63,10 @@ ipcMain.on('setSpotifyConfig', (event, arg) => {
 ipcMain.on('getSpotifyConfig', (event, arg) => {
   let config = fs.readFileSync('config/spotify-config.json', 'utf8');
   event.returnValue = config;
+});
+
+ipcMain.on('getPlaylists', (event, arg) => {
+  spotifyApi.getPlaylists().then(function(data){
+    event.returnValue = data;
+  });
 });

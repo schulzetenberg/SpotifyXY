@@ -1,13 +1,13 @@
 <div>
   <mat-toolbar color="primary">
-    <span>{{ title }}</span>
+    <span class="clickable" routerLink="/">{{ title }}</span>
     <span class="fill-remaining-space"></span>
     <button mat-icon-button [mat-menu-trigger-for]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
   </mat-toolbar>
   <mat-menu x-position="before" #menu="matMenu">
-    <button mat-menu-item>Settings</button>
+    <button mat-menu-item routerLink="settings">Settings</button>
     <button mat-menu-item routerLink="spotify-config">Spotify Config</button>
   </mat-menu>
 </div>
