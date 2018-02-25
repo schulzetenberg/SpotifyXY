@@ -9,3 +9,13 @@ body {
   /* This fills the remaining space, by using flexbox. */
   flex: 1 1 auto;
 }
+
+.sm-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
