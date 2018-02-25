@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   moduleId: module.id,
@@ -12,10 +13,14 @@ export class SpotifyConfigComponent implements OnInit {
   spotifySecret: String;
   spotifyId: String;
 
-  constructor(private _electronService: ElectronService) { }
+  constructor(
+    private _electronService: ElectronService,
+    private router: Router,
+  ) { }
 
   public submitSpotifyConfig(form: NgForm) {
     this._electronService.ipcRenderer.send('setSpotifyConfig', form.value);
+     this.router.navigate(['/']);
   }
 
   public getSpotifyConfig() {

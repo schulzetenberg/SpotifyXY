@@ -7,11 +7,18 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { MaterialCustomModule } from './material-custom/material-custom.module';
 import { SpotifyConfigComponent } from './spotify-config/spotify-config.component';
+import { MainComponent } from './main/main.component';
+import { AppRoutingModule } from './app-routing.module';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SpotifyConfigComponent
+    SpotifyConfigComponent,
+    MainComponent,
+    HeaderComponent,
+    FooterComponent
   ],
   imports: [
     NgxElectronModule,
@@ -19,7 +26,8 @@ import { SpotifyConfigComponent } from './spotify-config/spotify-config.componen
     BrowserAnimationsModule,
     MaterialCustomModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,16 +1,3 @@
-<div>
-  <mat-toolbar color="primary">
-    <span>{{ title }}</span>
-    <span class="fill-remaining-space"></span>
-    <button mat-icon-button [mat-menu-trigger-for]="menu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-  </mat-toolbar>
-  <mat-menu x-position="before" #menu="matMenu">
-    <button mat-menu-item>Settings</button>
-    <button mat-menu-item (click)="showSpotifyConfig = !showSpotifyConfig">Spotify Config</button>
-  </mat-menu>
-
-  <app-spotify-config *ngIf="showSpotifyConfig"></app-spotify-config>
-
-</div>
+<app-header></app-header>
+<router-outlet></router-outlet>
+<app-footer></app-footer>
