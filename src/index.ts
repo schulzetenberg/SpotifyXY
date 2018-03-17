@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { enableLiveReload } from 'electron-compile';
 const fs = require('fs');
-const spotifyApi = require('../node/spotify-api');
+const electronOauth2 = require('electron-oauth2');
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null;
@@ -32,6 +33,44 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  const config = JSON.parse(fs.readFileSync('config/spotify-config.json', 'utf8'));
+
+  const oauthConfig = {
+    clientId: config.spotifyId,
+    clientSecret: config.spotifySecret,
+    authorizationUrl: 'https://accounts.spotify.com/authorize',
+    tokenUrl: 'https://accounts.spotify.com/api/token',
+    useBasicAuthorizationHeader: false,
+    redirectUri: 'http://localhost'
+  };
+
+  const windowParams = {
+    alwaysOnTop: true,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: false
+    }
+  };
+
+  const options = {
+    // Give Spotify API full permissions (for now) TODO: Limit scope
+    scope: 'user-read-private user-read-email user-read-birthdate playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative user-top-read user-read-recently-played user-library-read user-library-modify user-read-currently-playing user-modify-playback-state user-read-playback-state user-follow-modify user-follow-read streaming',
+    accessType: "ACCESS_TYPE",
+};
+
+  const electronOAuth = electronOauth2(oauthConfig, windowParams);
+
+  ipcMain.on('spotify-oauth', (event: any, arg: any) => {
+    electronOAuth.getAccessToken(options)
+      .then(token => {
+        console.log('TOKEN', token);
+        event.sender.send('spotify-oauth-reply', token.access_token);
+      }, err => {
+        console.log('Error while getting token', err);
+      });
+  });
+
 };
 
 // This method will be called when Electron has finished
@@ -63,10 +102,4 @@ ipcMain.on('setSpotifyConfig', (event, arg) => {
 ipcMain.on('getSpotifyConfig', (event, arg) => {
   let config = fs.readFileSync('config/spotify-config.json', 'utf8');
   event.returnValue = config;
-});
-
-ipcMain.on('getPlaylists', (event, arg) => {
-  spotifyApi.getPlaylists().then(function(data){
-    event.returnValue = data;
-  });
 });

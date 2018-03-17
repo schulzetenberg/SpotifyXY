@@ -66,6 +66,7 @@
     "core-js": "2.5.3",
     "electron-compile": "6.4.2",
     "electron-devtools-installer": "2.2.3",
+    "electron-oauth2": "3.0.0",
     "electron-squirrel-startup": "1.0.0",
     "hammerjs": "2.0.8",
     "ngx-electron": "1.0.4",

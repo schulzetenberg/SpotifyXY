@@ -16,7 +16,7 @@ exports.get = function(params) {
     url: formatUrl(params.url),
     headers: params.headers || { 'Content-Type': 'application/json' }
   }).then(function(data){
-    if(data.statusCode !== 201 && data.statusCode !== 200){
+    if(data.statusCode < 200 || data.statusCode >= 300){
       let errBody = '';
       try {
         errBody = ' Error Body: ' + JSON.parse(data.body);
@@ -50,6 +50,16 @@ exports.post = function(params) {
   if(params.form) options.form = params.form;
 
   return request.post(options).then(function(data){
+    if(data.statusCode < 200 || data.statusCode >= 300){
+      let errBody = '';
+      try {
+        errBody = ' Error Body: ' + JSON.parse(data.body);
+      } catch (e) {
+        errBody = ' Error Body: ' + data.body;
+      }
+      return Promise.reject('API POST error for: ' + params.url + '. Status Code: ' + data.statusCode + '. Status Message: ' + data.statusMessage + errBody);
+    }
+
     return data.body;
   }).catch(function(err){
     return Promise.reject(err);

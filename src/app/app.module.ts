@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxElectronModule } from 'ngx-electron';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { MaterialCustomModule } from './material-custom/material-custom.module';
@@ -23,6 +24,7 @@ import { SettingsComponent } from './settings/settings.component';
     SettingsComponent
   ],
   imports: [
+    HttpModule,
     NgxElectronModule,
     BrowserModule,
     BrowserAnimationsModule,
