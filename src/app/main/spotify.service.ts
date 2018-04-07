@@ -1,16 +1,17 @@
-// https://raw.githubusercontent.com/carterwilliamson/angular2-spotify/master/angular2-spotify.ts
+// Original code from: https://raw.githubusercontent.com/carterwilliamson/angular2-spotify/master/angular2-spotify.ts
+// This code has since been modifed to work with electron service
 
-import {Injectable, Inject, Optional} from '@angular/core';
-import {Http, Headers, Response, Request} from '@angular/http'
+import { Injectable, Inject, Optional } from '@angular/core';
+import { Http, Headers, Response, Request } from '@angular/http'
 import { HttpModule } from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
+import { ElectronService } from 'ngx-electron';
 import 'rxjs/Rx';
 
 export interface SpotifyConfig {
   clientId: string,
   redirectUri: string,
   scope: string,
-  authToken?: string,
   apiBase: string,
 }
 
@@ -36,15 +37,20 @@ interface HttpRequestOptions {
   url: string,
   search?: Object,
   body?: Object,
-  headers?: Headers,
+  json?: Boolean,
 }
 
 @Injectable()
 //export default class SpotifyService {
 export class SpotifyService {
-  constructor( @Inject("SpotifyConfig") public config: SpotifyConfig, private http: Http) {
+  constructor(
+    @Inject("SpotifyConfig") public config: SpotifyConfig,
+    private http: Http,
+    private _electronService: ElectronService,
+  ) {
     config.apiBase = 'https://api.spotify.com/v1';
   }
+
 
   //#region albums
 
@@ -155,7 +161,6 @@ export class SpotifyService {
       method: 'get',
       url: `/browse/featured-playlists`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -164,7 +169,6 @@ export class SpotifyService {
       method: 'get',
       url: `/browse/new-releases`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -173,7 +177,6 @@ export class SpotifyService {
       method: 'get',
       url: `/browse/categories`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -182,7 +185,6 @@ export class SpotifyService {
       method: 'get',
       url: `/browse/categories/${categoryId}`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -191,7 +193,6 @@ export class SpotifyService {
       method: 'get',
       url: `/browse/categories/${categoryId}/playlists`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -200,7 +201,6 @@ export class SpotifyService {
       method: 'get',
       url: `/recommendations`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -208,7 +208,6 @@ export class SpotifyService {
       return this.api({
       method: 'get',
       url: `/recommendations/available-genre-seeds`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -223,7 +222,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/following`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -232,7 +230,6 @@ export class SpotifyService {
       method: 'put',
       url: `/me/following`,
       search: { type: type, ids: ids.toString() },
-      headers: this.getHeaders()
     });
   }
 
@@ -241,7 +238,6 @@ export class SpotifyService {
       method: 'delete',
       url: `/me/following`,
       search: { type: type, ids: ids.toString() },
-      headers: this.getHeaders()
     });
   }
 
@@ -250,7 +246,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/following/contains`,
       search: { type: type, ids: ids.toString() },
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -259,7 +254,7 @@ export class SpotifyService {
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}/followers`,
       body: { public: !!isPublic },
-      headers: this.getHeaders(true)
+      json: true,
     });
   }
 
@@ -267,7 +262,6 @@ export class SpotifyService {
     return this.api({
       method: 'delete',
       url: `/users/${userId}/playlists/${playlistId}/followers`,
-      headers: this.getHeaders()
     });
   }
 
@@ -276,7 +270,6 @@ export class SpotifyService {
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}/followers/contains`,
       search: { ids: ids.toString() },
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -289,7 +282,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/tracks`,
-      headers: this.getHeaders(),
       search: options
     }).map(res => res.json());
   }
@@ -299,7 +291,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/tracks/contains`,
-      headers: this.getHeaders(),
       search: { ids: trackList.toString() }
     }).map(res => res.json());
   }
@@ -310,7 +301,6 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/me/tracks`,
-      headers: this.getHeaders(),
       search: { ids: trackList.toString() }
     });
   }
@@ -321,7 +311,6 @@ export class SpotifyService {
     return this.api({
       method: 'delete',
       url: `/me/tracks`,
-      headers: this.getHeaders(),
       search: { ids: trackList.toString() }
     });
   }
@@ -330,7 +319,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/albums`,
-      headers: this.getHeaders(),
       search: options
     }).map(res => res.json());
   }
@@ -341,7 +329,6 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/me/albums`,
-      headers: this.getHeaders(),
       search: { ids: albumList.toString() }
     });
   }
@@ -352,7 +339,6 @@ export class SpotifyService {
     return this.api({
       method: 'delete',
       url: `/me/albums`,
-      headers: this.getHeaders(),
       search: { ids: albumList.toString() }
     });
   }
@@ -363,7 +349,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/albums/contains`,
-      headers: this.getHeaders(),
       search: { ids: albumList.toString() }
     }).map(res => res.json());
   }
@@ -377,7 +362,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/top/artists`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -386,7 +370,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/top/tracks`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -395,7 +378,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/player/recently-played`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -407,7 +389,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists`,
-      headers: this.getHeaders(),
       search: options
     }).map(res => res.json());
   }
@@ -417,7 +398,6 @@ export class SpotifyService {
       method: 'get',
       url: `/me/playlists/`,
       search: options,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -425,7 +405,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}`,
-      headers: this.getHeaders(),
       search: options
     }).map(res => res.json());
   }
@@ -434,7 +413,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      headers: this.getHeaders(),
       search: options
     }).map(res => res.json());
   }
@@ -443,7 +421,7 @@ export class SpotifyService {
     return this.api({
       method: 'post',
       url: `/users/${userId}/playlists`,
-      headers: this.getHeaders(true),
+      json: true,
       body: options
     }).map(res => res.json());
   }
@@ -460,7 +438,7 @@ export class SpotifyService {
     return this.api({
       method: 'post',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      headers: this.getHeaders(true),
+      json: true,
       search: search
     }).map(res => res.json());
   }
@@ -476,7 +454,7 @@ export class SpotifyService {
     return this.api({
       method: 'delete',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      headers: this.getHeaders(true),
+      json: true,
       body: { tracks: trackUris }
     }).map(res => res.json());
   }
@@ -485,7 +463,7 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      headers: this.getHeaders(true),
+      json: true,
       body: options
     }).map(res => res.json());
   }
@@ -499,7 +477,6 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      headers: this.getHeaders(),
       search: { uris: trackList.toString() }
     }).map(res => res.json());
   }
@@ -508,7 +485,7 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}`,
-      headers: this.getHeaders(true),
+      json: true,
       body: options
     });
   }
@@ -528,7 +505,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -579,7 +555,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/audio-analysis/${track}`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -588,7 +563,6 @@ export class SpotifyService {
       return this.api({
         method: 'get',
         url: `/audio-features/${track}`,
-        headers: this.getHeaders()
       }).map(res => res.json());
   }
 
@@ -599,61 +573,9 @@ export class SpotifyService {
       method: 'get',
       url: `/audio-features/`,
       search: { ids: trackList.toString() },
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
-
-
-
-  //#endregion
-
-  //#region login
-
-  login() {
-    var promise = new Promise((resolve, reject) => {
-      var w = 400,
-        h = 500,
-        left = (screen.width / 2) - (w / 2),
-        top = (screen.height / 2) - (h / 2);
-
-      var params = {
-        client_id: this.config.clientId,
-        redirect_uri: this.config.redirectUri,
-        scope: this.config.scope || '',
-        response_type: 'token'
-      };
-      var authCompleted = false;
-      var authWindow = this.openDialog(
-        'https://accounts.spotify.com/authorize?' + this.toQueryString(params),
-        'Spotify',
-        'menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,width=' + w + ',height=' + h + ',top=' + top + ',left=' + left,
-        () => {
-          if (!authCompleted) {
-            return reject('Login rejected error');
-          }
-        }
-      );
-
-      var storageChanged = (e) => {
-        if (e.key === 'angular2-spotify-token') {
-          if (authWindow) {
-            authWindow.close();
-          }
-          authCompleted = true;
-          console.log('storage changed');
-          console.log(e);
-          this.config.authToken = e.newValue;
-          window.removeEventListener('storage', storageChanged, false);
-
-          return resolve(e.newValue);
-        }
-      };
-      window.addEventListener('storage', storageChanged, false);
-    });
-
-    return Observable.fromPromise(promise).catch(this.handleError);
-  }
 
   //#endregion
 
@@ -662,7 +584,6 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/me/player/play`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -670,7 +591,6 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/me/player/pause`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -678,7 +598,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/player`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -686,7 +605,6 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/player/devices`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
@@ -694,23 +612,19 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/player/currently-playing`,
-      headers: this.getHeaders()
     }).map(res => res.json());
   }
 
-  // CUSTOM JACOB
   seek(position_ms: string, device_id?: string){
     return this.api({
       method: 'put',
       url: `/me/player/seek`,
-      headers: this.getHeaders(),
       search: {
         position_ms: position_ms,
         ...(device_id ? { device_id: device_id } : {}) // Optional
       }
     });
   }
-
 
   //#endregion
 
@@ -726,22 +640,9 @@ export class SpotifyService {
     return parts.join('&');
   };
 
-  private openDialog(uri, name, options, cb) {
-    var win = window.open(uri, name, options);
-    var interval = window.setInterval(() => {
-      try {
-        if (!win || win.closed) {
-          window.clearInterval(interval);
-          cb(win);
-        }
-      } catch (e) { }
-    }, 1000000);
-    return win;
-  }
-
   private auth(isJson?: boolean): Object {
     var auth = {
-      'Authorization': 'Bearer ' + this.config.authToken
+      'Authorization': 'Bearer ' + localStorage.getItem('angular2-spotify-token')
     };
     if (isJson) {
       auth['Content-Type'] = 'application/json';
@@ -765,19 +666,62 @@ export class SpotifyService {
     return itemList;
   }
 
-  private handleError(error: Response) {
-    console.error(error);
-    return Observable.throw(error.json().error || 'Server error');
+  private api(requestOptions: HttpRequestOptions) {
+    const self = this;
+
+    return this.getToken().flatMap(function(){
+      return self.http.request(new Request({
+       url: self.config.apiBase + requestOptions.url,
+       method: requestOptions.method || 'get',
+       search: self.toQueryString(requestOptions.search),
+       body: JSON.stringify(requestOptions.body),
+       headers: self.getHeaders(requestOptions.json)
+     }));
+   });
   }
 
-  private api(requestOptions: HttpRequestOptions) {
-    return this.http.request(new Request({
-      url: this.config.apiBase + requestOptions.url,
-      method: requestOptions.method || 'get',
-      search: this.toQueryString(requestOptions.search),
-      body: JSON.stringify(requestOptions.body),
-      headers: requestOptions.headers
-    }));
+  // Before each HTTP request, call this function to verify we have a valid auth token
+  private getToken() {
+    const self = this;
+
+    // TODO: Figure out how to use resolve in the context of a observable instead of converting from a promise
+    return Observable.fromPromise(new Promise(
+      function (resolve, reject) {
+        // TODO: Add error handling and timeouts to the promise
+
+        if (!localStorage.getItem('angular2-spotify-token')) {
+          console.log('No OAUTH token. Send the request.')
+          self._electronService.ipcRenderer.send('spotify-oauth');
+        } else {
+          let now = new Date().toString();
+          let exp = localStorage.getItem('spotify-token-expiration');
+
+          if (!exp || (exp < now)) {
+            console.log('Token is expired. Get a new token.');
+            self._electronService.ipcRenderer.send('spotify-oauth'); // TODO: Use refresh token to get new auth
+          } else {
+            console.log("Existing OAUTH token", localStorage.getItem('angular2-spotify-token'));
+            resolve();
+          }
+        }
+
+        // NOTE: This is a security risk having all the token data saved in localstorage. Change this for a production application
+        self._electronService.ipcRenderer.on('spotify-oauth-reply', function(event: any, arg: any) {
+          // Using the expires_in field, we can determine how long we have until we have to get a new token (Current value for Spotify API is 60 min.)
+          let exp = new Date();
+          exp.setSeconds(exp.getSeconds() + arg.expires_in - 30); // Set the expiration date 30 seconds before the token actually expires to have time to get a new token
+          localStorage.setItem('spotify-token-expiration', exp.toString());
+          console.log("Token EXP", localStorage.getItem('spotify-token-expiration'));
+
+
+          localStorage.setItem('spotify-refresh-token', arg.refresh_token);
+          localStorage.setItem('angular2-spotify-token', arg.access_token);
+          console.log("Saved OAUTH token to local storage", localStorage.getItem('angular2-spotify-token'));
+
+          resolve();
+        });
+      }
+    ));
   }
 
   //#endregion

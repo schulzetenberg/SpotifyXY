@@ -62,13 +62,12 @@ const createWindow = async () => {
   const electronOAuth = electronOauth2(oauthConfig, windowParams);
 
   ipcMain.on('spotify-oauth', (event: any, arg: any) => {
-    electronOAuth.getAccessToken(options)
-      .then(token => {
-        console.log('TOKEN', token);
-        event.sender.send('spotify-oauth-reply', token.access_token);
-      }, err => {
-        console.log('Error while getting token', err);
-      });
+    electronOAuth.getAccessToken(options).then(token => {
+      console.log('TOKEN', token);
+      event.sender.send('spotify-oauth-reply', token);
+    }, err => {
+      console.log('Error while getting token', err);
+    });
   });
 
 };

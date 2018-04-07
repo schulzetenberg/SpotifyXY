@@ -12,14 +12,7 @@ import { SpotifyService } from './spotify.service';
     SpotifyService, {
     provide:
       "SpotifyConfig",
-      useValue: {
-        /*  We are not using the Spotify Service for auth so the only config
-            we need is the auth token location. The auth token is obtained
-            server side using electron OAUTH and passed back to the front end
-            where it is saved in local storage.
-        */
-        authToken: localStorage.getItem('angular2-spotify-token')
-      }
+      useValue: { }
     }
   ]
 })
@@ -30,20 +23,7 @@ export class MainComponent implements OnInit {
 
 
   ngOnInit() {
-    const self = this;
 
-    if(!localStorage.getItem('angular2-spotify-token')) {
-      console.log('No OAUTH token. Send the request.')
-      this._electronService.ipcRenderer.send('spotify-oauth');
-    } else {
-      console.log("Existing OAUTH token", localStorage.getItem('angular2-spotify-token'));
-    }
-
-    this._electronService.ipcRenderer.on('spotify-oauth-reply', function(event: any, arg: any) {
-      localStorage.setItem('angular2-spotify-token', arg);
-      console.log("Saved OAUTH token to local storage", localStorage.getItem('angular2-spotify-token'));
-      self.spotifyService.config.authToken = arg;
-    });
   }
 
   public seek() {
