@@ -2,7 +2,11 @@
 
 <mat-card>
   <button mat-raised-button (click)="seek()">Seek To 1 Min</button>
-  <button mat-raised-button (click)="removeToken()">Remove API Token (Restart to see changes)</button>
+
+    <button mat-raised-button (click)="removeSongFromPlaylist()">Remove Song From Current Playlist</button>
+    <button mat-raised-button (click)="play()">Play</button>
+    <button mat-raised-button (click)="pause()">Pause</button>
+  <button mat-raised-button (click)="removeToken()">Remove API Token</button>
 </mat-card>
 
 

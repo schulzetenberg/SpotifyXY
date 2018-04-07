@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { SpotifyService } from './spotify.service';
 
 @Component({
@@ -19,7 +18,7 @@ import { SpotifyService } from './spotify.service';
 export class MainComponent implements OnInit {
   apiResponse: any;
 
-  constructor(private _electronService: ElectronService, private spotifyService: SpotifyService) { }
+  constructor(private spotifyService: SpotifyService) { }
 
 
   ngOnInit() {
@@ -27,10 +26,42 @@ export class MainComponent implements OnInit {
   }
 
   public seek() {
-    console.log('seek');
+    this.spotifyService.seek('60000').subscribe();
+  }
 
-    this.spotifyService.seek('60000').subscribe(data => {
-      console.log(data);
+  public play() {
+    this.spotifyService.startPlayback().subscribe();
+  }
+
+  public pause() {
+    this.spotifyService.pausePlayback().subscribe();
+  }
+
+  public removeSongFromPlaylist() {
+    this.spotifyService.getPlayStatus().subscribe(data => {
+      let tracks = this.parseUri('track', data.item.uri);
+      let context = data.context;
+
+      if (tracks && context && context.type === 'playlist' && context.uri) {
+        let playlistId = this.parseUri('playlist', context.uri);
+        let userId = this.parseUri('user', context.uri);
+
+        this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).subscribe();
+      } else {
+        console.log('Could not get playlist data. Assuming we are not currently listening to a playlist.');
+      }
+    });
+  }
+
+  // example uri: "spotify:user:sczo13au5tgxr1cnsttqasqz5:playlist:1MBIggvHjECvRqnxUa3LX2"
+  private parseUri(property: string, uri: string) {
+    let start = uri.indexOf(property + ':') + property.length + 1; // We need to add in the index length to only get data found after the index
+    if (start > property.length) {
+      let value = uri.substring(start, uri.length).split(':')[0];
+      return value;
+    } else {
+      console.log(`Error! Property ${property} ID not found in the URI.`);
+      return '';
     }
   }
 
