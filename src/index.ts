@@ -48,6 +48,8 @@ const createWindow = async () => {
   const windowParams = {
     alwaysOnTop: true,
     autoHideMenuBar: true,
+    transparent: true,
+    frame: false,
     webPreferences: {
       nodeIntegration: false
     }
