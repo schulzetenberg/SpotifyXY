@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SpotifyService } from './spotify.service';
+import { SpotifyService } from '../shared/spotify.service';
 
 @Component({
   moduleId: module.id,
@@ -10,41 +10,42 @@ import { SpotifyService } from './spotify.service';
   providers: [
     SpotifyService, {
     provide:
-      "SpotifyConfig",
+      'SpotifyConfig',
       useValue: { }
     }
-  ]
+  ],
 })
 export class MainComponent implements OnInit {
   apiResponse: any;
 
-  constructor(private spotifyService: SpotifyService) { }
-
+  constructor(
+    private spotifyService: SpotifyService,
+  ) { }
 
   ngOnInit() {
 
   }
 
-  public seek() {
+  seek() {
     this.spotifyService.seek('60000').subscribe();
   }
 
-  public play() {
+  play() {
     this.spotifyService.startPlayback().subscribe();
   }
 
-  public pause() {
+  pause() {
     this.spotifyService.pausePlayback().subscribe();
   }
 
-  public removeSongFromPlaylist() {
+  removeSongFromPlaylist() {
     this.spotifyService.getPlayStatus().subscribe(data => {
-      let tracks = this.parseUri('track', data.item.uri);
-      let context = data.context;
+      const tracks = this.parseUri('track', data.item.uri);
+      const context = data.context;
 
       if (tracks && context && context.type === 'playlist' && context.uri) {
-        let playlistId = this.parseUri('playlist', context.uri);
-        let userId = this.parseUri('user', context.uri);
+        const playlistId = this.parseUri('playlist', context.uri);
+        const userId = this.parseUri('user', context.uri);
 
         this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).subscribe();
       } else {
@@ -53,11 +54,13 @@ export class MainComponent implements OnInit {
     });
   }
 
-  // example uri: "spotify:user:sczo13au5tgxr1cnsttqasqz5:playlist:1MBIggvHjECvRqnxUa3LX2"
+  // example uri: 'spotify:user:sczo13au5tgxr1cnsttqasqz5:playlist:1MBIggvHjECvRqnxUa3LX2'
   private parseUri(property: string, uri: string) {
-    let start = uri.indexOf(property + ':') + property.length + 1; // We need to add in the index length to only get data found after the index
+    // We need to add in the index length to only get data found after the index
+    const start = uri.indexOf(property + ':') + property.length + 1;
+
     if (start > property.length) {
-      let value = uri.substring(start, uri.length).split(':')[0];
+      const value = uri.substring(start, uri.length).split(':')[0];
       return value;
     } else {
       console.log(`Error! Property ${property} ID not found in the URI.`);
@@ -65,7 +68,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  public removeToken() {
+  removeToken() {
     localStorage.setItem('angular2-spotify-token', '');
     console.log('Removed Spotify API token');
   }

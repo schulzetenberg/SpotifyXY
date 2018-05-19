@@ -41,10 +41,9 @@ interface HttpRequestOptions {
 }
 
 @Injectable()
-//export default class SpotifyService {
 export class SpotifyService {
   constructor(
-    @Inject("SpotifyConfig") public config: SpotifyConfig,
+    @Inject('SpotifyConfig') public config: SpotifyConfig,
     private http: Http,
     private _electronService: ElectronService,
   ) {
@@ -71,7 +70,7 @@ export class SpotifyService {
 * Pass in comma separated string or array of album ids
 */
   getAlbums(albums: string | Array<string>) {
-    var albumList = this.mountItemList(albums);
+    const albumList = this.mountItemList(albums);
     return this.api({
       method: 'get',
       url: `/albums`,
@@ -111,7 +110,7 @@ export class SpotifyService {
 * Get multiple artists
 */
   getArtists(artists: string | Array<string>) {
-    var artistList = this.mountItemList(artists);
+    const artistList = this.mountItemList(artists);
     return this.api({
       method: 'get',
       url: `/artists/`,
@@ -119,7 +118,7 @@ export class SpotifyService {
     }).map(res => res.json());
   }
 
-  //Artist Albums
+  // Artist Albums
   getArtistAlbums(artist: string, options?: SpotifyOptions) {
     artist = this.getIdFromUri(artist);
     return this.api({
@@ -287,7 +286,7 @@ export class SpotifyService {
   }
 
   userTracksContains(tracks: string | Array<string>) {
-    var trackList = this.mountItemList(tracks);
+    const trackList = this.mountItemList(tracks);
     return this.api({
       method: 'get',
       url: `/me/tracks/contains`,
@@ -296,7 +295,7 @@ export class SpotifyService {
   }
 
   saveUserTracks(tracks: string | Array<string>) {
-    var trackList = this.mountItemList(tracks);
+    const trackList = this.mountItemList(tracks);
 
     return this.api({
       method: 'put',
@@ -306,7 +305,7 @@ export class SpotifyService {
   }
 
   removeUserTracks(tracks: string | Array<string>) {
-    var trackList = this.mountItemList(tracks);
+    const trackList = this.mountItemList(tracks);
 
     return this.api({
       method: 'delete',
@@ -324,7 +323,7 @@ export class SpotifyService {
   }
 
   saveUserAlbums(albums: string | Array<string>) {
-    var albumList = this.mountItemList(albums);
+    const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'put',
@@ -334,7 +333,7 @@ export class SpotifyService {
   }
 
   removeUserAlbums(albums: string | Array<string>) {
-    var albumList = this.mountItemList(albums);
+    const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'delete',
@@ -344,7 +343,7 @@ export class SpotifyService {
   }
 
   userAlbumsContains(albums: string | Array<string>) {
-    var albumList = this.mountItemList(albums);
+    const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'get',
@@ -427,13 +426,15 @@ export class SpotifyService {
   }
 
   addPlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>, options?: { position: number }) {
-    var trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
+    const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
     trackList.forEach((value, index) => {
       trackList[index] = value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value;
     });
 
-    var search = { uris: trackList.toString() };
-    if (!!options) search['position'] = options.position;
+    const search = { uris: trackList.toString() };
+    if (!!options) {
+      search['position'] = options.position;
+    }
 
     return this.api({
       method: 'post',
@@ -444,8 +445,8 @@ export class SpotifyService {
   }
 
   removePlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>) {
-    var trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
-    var trackUris = [];
+    const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
+    const trackUris = [];
     trackList.forEach((value, index) => {
       trackUris[index] = {
         uri: value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value
@@ -469,7 +470,7 @@ export class SpotifyService {
   }
 
   replacePlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>) {
-    var trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
+    const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
     trackList.forEach((value, index) => {
       trackList[index] = value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value;
     });
@@ -542,7 +543,7 @@ export class SpotifyService {
   }
 
   getTracks(tracks: string | Array<string>) {
-    var trackList = this.mountItemList(tracks);
+    const trackList = this.mountItemList(tracks);
     return this.api({
         method: 'get',
         url: `/tracks/`,
@@ -568,7 +569,7 @@ export class SpotifyService {
 
 
   getTracksAudioFeatures(tracks: string | Array<string>) {
-    var trackList = this.mountItemList(tracks);
+    const trackList = this.mountItemList(tracks);
     return this.api({
       method: 'get',
       url: `/audio-features/`,
@@ -580,42 +581,42 @@ export class SpotifyService {
   //#endregion
 
   //#region Player
-  startPlayback(){
+  startPlayback() {
     return this.api({
       method: 'put',
       url: `/me/player/play`,
     }).map(res => res.json());
   }
 
-  pausePlayback(){
+  pausePlayback() {
     return this.api({
       method: 'put',
       url: `/me/player/pause`,
     }).map(res => res.json());
   }
 
-  getPlayStatus(){
+  getPlayStatus() {
     return this.api({
       method: 'get',
       url: `/me/player`,
     }).map(res => res.json());
   }
 
-  getDeviceInfo(){
+  getDeviceInfo() {
     return this.api({
       method: 'get',
       url: `/me/player/devices`,
     }).map(res => res.json());
   }
 
-  getCurrentPlaying(){
+  getCurrentPlaying() {
     return this.api({
       method: 'get',
       url: `/me/player/currently-playing`,
     }).map(res => res.json());
   }
 
-  seek(position_ms: string, device_id?: string){
+  seek(position_ms: string, device_id?: string) {
     return this.api({
       method: 'put',
       url: `/me/player/seek`,
@@ -631,17 +632,17 @@ export class SpotifyService {
   //#region utils
 
   private toQueryString(obj: Object): string {
-    var parts = [];
-    for (let key in obj) {
+    const parts = [];
+    for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
       }
-    };
+    }
     return parts.join('&');
-  };
+  }
 
   private auth(isJson?: boolean): Object {
-    var auth = {
+    const auth = {
       'Authorization': 'Bearer ' + localStorage.getItem('angular2-spotify-token')
     };
     if (isJson) {
@@ -659,7 +660,7 @@ export class SpotifyService {
   }
 
   private mountItemList(items: string | Array<string>): Array<string> {
-    var itemList = Array.isArray(items) ? items : items.split(',');
+    const itemList = Array.isArray(items) ? items : items.split(',');
     itemList.forEach((value, index) => {
       itemList[index] = this.getIdFromUri(value);
     });
@@ -669,7 +670,7 @@ export class SpotifyService {
   private api(requestOptions: HttpRequestOptions) {
     const self = this;
 
-    return this.getToken().flatMap(function(){
+    return this.getToken().flatMap(function() {
       return self.http.request(new Request({
        url: self.config.apiBase + requestOptions.url,
        method: requestOptions.method || 'get',
@@ -690,17 +691,17 @@ export class SpotifyService {
         // TODO: Add error handling and timeouts to the promise
 
         if (!localStorage.getItem('angular2-spotify-token')) {
-          console.log('No OAUTH token. Send the request.')
+          console.log('No OAUTH token. Send the request.');
           self._electronService.ipcRenderer.send('spotify-oauth');
         } else {
-          let now = new Date().toString();
-          let exp = localStorage.getItem('spotify-token-expiration');
+          const now = new Date().toString();
+          const exp = localStorage.getItem('spotify-token-expiration');
 
           if (!exp || (exp < now)) {
             console.log('Token is expired. Get a new token.');
             self._electronService.ipcRenderer.send('spotify-oauth'); // TODO: Use refresh token to get new auth
           } else {
-            console.log("Existing OAUTH token", localStorage.getItem('angular2-spotify-token'));
+            console.log('Existing OAUTH token', localStorage.getItem('angular2-spotify-token'));
             resolve();
           }
         }
@@ -708,15 +709,15 @@ export class SpotifyService {
         // NOTE: This is a security risk having all the token data saved in localstorage. Change this for a production application
         self._electronService.ipcRenderer.on('spotify-oauth-reply', function(event: any, arg: any) {
           // Using the expires_in field, we can determine how long we have until we have to get a new token (Current value for Spotify API is 60 min.)
-          let exp = new Date();
+          const exp = new Date();
           exp.setSeconds(exp.getSeconds() + arg.expires_in - 30); // Set the expiration date 30 seconds before the token actually expires to have time to get a new token
           localStorage.setItem('spotify-token-expiration', exp.toString());
-          console.log("Token EXP", localStorage.getItem('spotify-token-expiration'));
+          console.log('Token EXP', localStorage.getItem('spotify-token-expiration'));
 
 
           localStorage.setItem('spotify-refresh-token', arg.refresh_token);
           localStorage.setItem('angular2-spotify-token', arg.access_token);
-          console.log("Saved OAUTH token to local storage", localStorage.getItem('angular2-spotify-token'));
+          console.log('Saved OAUTH token to local storage', localStorage.getItem('angular2-spotify-token'));
 
           resolve();
         });
