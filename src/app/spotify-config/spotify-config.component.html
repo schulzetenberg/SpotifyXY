@@ -12,11 +12,14 @@
       <input matInput placeholder="Spotify Secret" name="spotifySecret" [(ngModel)]="config.spotifySecret">
     </mat-form-field>
     <mat-form-field class="full-width">
+      <input matInput type="number" placeholder="Seek Time (Seconds)" name="seekSeconds" [(ngModel)]="config.seekSeconds">
+    </mat-form-field>
+    <mat-form-field class="full-width">
       <mat-select placeholder="Favorite Editable Playlists" multiple name="playlists" [(ngModel)]="playlists">
         <mat-select-trigger>
-          {{playlists.value ? playlists.value[0].name : ''}}
+          {{ playlists.value ? playlists.value[0].name : ''}}
           <span *ngIf="playlists.value?.length > 1" class="example-additional-selection">
-            (+{{playlists.value.length - 1}} others)
+            (+{{ playlists.value.length - 1 }} others)
           </span>
         </mat-select-trigger>
         <mat-option *ngFor="let playlist of editablePlaylists" [value]="playlist">{{playlist.name}}</mat-option>

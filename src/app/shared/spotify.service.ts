@@ -595,6 +595,13 @@ export class SpotifyService {
     }).map(res => res.json());
   }
 
+  nextSong() {
+    return this.api({
+      method: 'post',
+      url: `/me/player/next`,
+    }).map(res => res.json());
+  }
+
   getPlayStatus() {
     return this.api({
       method: 'get',
@@ -616,12 +623,12 @@ export class SpotifyService {
     }).map(res => res.json());
   }
 
-  seek(position_ms: string, device_id?: string) {
+  seek(position_sec: number, device_id?: string) {
     return this.api({
       method: 'put',
       url: `/me/player/seek`,
       search: {
-        position_ms: position_ms,
+        position_ms: position_sec * 1000,
         ...(device_id ? { device_id: device_id } : {}) // Optional
       }
     });

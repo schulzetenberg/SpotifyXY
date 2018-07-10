@@ -34,7 +34,7 @@ export class SpotifyConfigComponent implements OnInit {
   public submitSpotifyConfig(form: NgForm) {
     const saveData = form.value;
     saveData.favoritePlaylists = this.playlists;
-    console.log(this.playlists)
+    console.log(this.playlists);
     console.log(form.value);
     this.spotifyConfigService.setSpotifyConfig(form.value);
     this.router.navigate(['/']);

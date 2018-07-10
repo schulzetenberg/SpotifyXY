@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
 import { SpotifyService } from '../shared/spotify.service';
+import { SpotifyConfigService } from '../shared/spotify-config.service';
 
 @Component({
   moduleId: module.id,
@@ -8,6 +10,7 @@ import { SpotifyService } from '../shared/spotify.service';
   styleUrls: ['./main.component.css'],
 
   providers: [
+    SpotifyConfigService,
     SpotifyService, {
     provide:
       'SpotifyConfig',
@@ -17,17 +20,22 @@ import { SpotifyService } from '../shared/spotify.service';
 })
 export class MainComponent implements OnInit {
   apiResponse: any;
+  config: any;
+  seekTime: number;
 
   constructor(
     private spotifyService: SpotifyService,
-  ) { }
+    private spotifyConfigService: SpotifyConfigService,
+  ) {
+  }
 
   ngOnInit() {
-
+    this.config = this.spotifyConfigService.getSpotifyConfig();
+    this.seekTime = this.config.seekSeconds || 30; // Default of 30 seconds
   }
 
   seek() {
-    this.spotifyService.seek('60000').subscribe();
+    this.spotifyService.seek(this.seekTime).subscribe();
   }
 
   play() {
@@ -38,7 +46,7 @@ export class MainComponent implements OnInit {
     this.spotifyService.pausePlayback().subscribe();
   }
 
-  removeSongFromPlaylist() {
+  removeSongFromPlaylist(seek?: boolean) {
     this.spotifyService.getPlayStatus().subscribe(data => {
       const tracks = this.parseUri('track', data.item.uri);
       const context = data.context;
@@ -47,7 +55,21 @@ export class MainComponent implements OnInit {
         const playlistId = this.parseUri('playlist', context.uri);
         const userId = this.parseUri('user', context.uri);
 
-        this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).subscribe();
+        this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).subscribe(removeData => {
+          if (!removeData.snapshot_id) {
+            return console.log('Error removing playlist track');
+          }
+
+          this.spotifyService.nextSong().subscribe(() => {
+            if (seek) {
+              this.spotifyService.seek(this.seekTime).subscribe(dataSeek => {
+                if (dataSeek.status !== 204) {
+                  console.log(`Error seeking: ${dataSeek.statusText}`);
+                }
+              });
+            }
+          });
+        });
       } else {
         console.log('Could not get playlist data. Assuming we are not currently listening to a playlist.');
       }

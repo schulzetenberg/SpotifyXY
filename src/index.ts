@@ -60,7 +60,7 @@ const createWindow = async () => {
   const options = {
     // Give Spotify API full permissions (for now) TODO: Limit scope
     scope: 'user-read-private user-read-email user-read-birthdate playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative user-top-read user-read-recently-played user-library-read user-library-modify user-read-currently-playing user-modify-playback-state user-read-playback-state user-follow-modify user-follow-read streaming',
-    accessType: "ACCESS_TYPE",
+    accessType: 'ACCESS_TYPE',
 };
 
   const electronOAuth = electronOauth2(oauthConfig, windowParams);
@@ -99,10 +99,10 @@ app.on('activate', () => {
 });
 
 ipcMain.on('setSpotifyConfig', (event, arg) => {
-  fs.writeFile("config/spotify-config.json", JSON.stringify(arg, null, 2), "utf8");
+  fs.writeFile('config/spotify-config.json', JSON.stringify(arg, null, 2), 'utf8');
 });
 
 ipcMain.on('getSpotifyConfig', (event, arg) => {
-  let config = fs.readFileSync('config/spotify-config.json', 'utf8');
+  const config = fs.readFileSync('config/spotify-config.json', 'utf8');
   event.returnValue = config;
 });
