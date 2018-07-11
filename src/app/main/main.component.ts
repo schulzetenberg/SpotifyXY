@@ -46,6 +46,20 @@ export class MainComponent implements OnInit {
     this.spotifyService.pausePlayback().subscribe();
   }
 
+  addToPlaylist(playlist: any) {
+    this.spotifyService.getPlayStatus().subscribe(data => {
+      const tracks = this.parseUri('track', data.item.uri);
+      const userId = this.parseUri('user', data.context.uri);
+
+      // TODO: Prevent duplicate songs
+      this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(addData => {
+        if (!addData.snapshot_id) {
+          return console.log('Error adding playlist track');
+        }
+      });
+    });
+  }
+
   removeSongFromPlaylist(seek?: boolean) {
     this.spotifyService.getPlayStatus().subscribe(data => {
       const tracks = this.parseUri('track', data.item.uri);

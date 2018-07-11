@@ -17,7 +17,7 @@
     <mat-form-field class="full-width">
       <mat-select [compareWith]="compareFunc"  placeholder="Favorite Editable Playlists" multiple name="playlists" [(ngModel)]="playlists">
         <mat-select-trigger>
-          {{ playlists.length ? playlists[0].name : ''}}
+          {{ playlists.length ? playlists[0].name : '' }}
           <span *ngIf="playlists.length > 1" class="example-additional-selection">
             (+{{ playlists.length - 1 }} others)
           </span>

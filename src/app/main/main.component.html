@@ -7,7 +7,10 @@
     <button mat-raised-button (click)="pause()">Pause</button>
   <button mat-raised-button (click)="removeToken()">Remove API Token</button>
 </mat-card>
-
+<mat-card>
+  Add Song to Playlist
+  <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">{{ playlist.name }}</button>
+</mat-card>
 
 <mat-card>
   <span>Response</span>
