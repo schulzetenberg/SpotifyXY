@@ -60,15 +60,20 @@ export class MainComponent implements OnInit {
             return console.log('Error removing playlist track');
           }
 
-          this.spotifyService.nextSong().subscribe(() => {
-            if (seek) {
-              this.spotifyService.seek(this.seekTime).subscribe(dataSeek => {
-                if (dataSeek.status !== 204) {
-                  console.log(`Error seeking: ${dataSeek.statusText}`);
-                }
-              });
-            }
-          });
+          if (seek) {
+            this.spotifyService.nextSong().subscribe(() => {
+                this.spotifyService.seek(this.seekTime).subscribe(dataSeek => {
+                  if (dataSeek.status !== 204) {
+                    console.log(`Error seeking: ${dataSeek.statusText}`);
+                  }
+                });
+            });
+          }
+        }, removeErr => {
+          if (removeErr._body) {
+            const body = JSON.parse(removeErr._body);
+            console.log(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
+          }
         });
       } else {
         console.log('Could not get playlist data. Assuming we are not currently listening to a playlist.');

@@ -34,44 +34,34 @@ export class SpotifyConfigComponent implements OnInit {
   public submitSpotifyConfig(form: NgForm) {
     const saveData = form.value;
     saveData.favoritePlaylists = this.playlists;
-    console.log(this.playlists);
-    console.log(form.value);
     this.spotifyConfigService.setSpotifyConfig(form.value);
     this.router.navigate(['/']);
   }
 
+  compareFunc(c1: any, c2: any): boolean {
+    return c1 && c2 ? c1.id === c2.id : false;
+}
+
   public getEditablePlaylists() {
-    const self = this;
     // Spotify API only allows 50 playlists at a time
     this.spotifyService.getCurrentUserPlaylists({ limit: 50 }).subscribe(data => {
       const { spotifyUsername } = this.config;
-      const { favoritePlaylists } = this.config;
       const editablePlaylists = [];
 
-      data.items.forEach(function(playlist) {
-        let prevFavorite = false;
-
+      data.items.forEach(function(playlist: any) {
         // We only care about playlists owned by us or collaborative playlists we can edit
         if ((playlist.owner.id === spotifyUsername) || (playlist.collaborative === true)) {
-          const found = _.find(favoritePlaylists, { id: playlist.id });
-
-          if (found) {
-            console.log('found');
-            prevFavorite = true;
-          }
-
-          // TODO: How can I use active to default the option as checked?
-          editablePlaylists.push({ name: playlist.name, id: playlist.id, active: prevFavorite });
+          editablePlaylists.push({ name: playlist.name, id: playlist.id });
         }
       });
 
       this.editablePlaylists = editablePlaylists;
-      console.log(editablePlaylists);
     });
   }
 
   ngOnInit() {
     this.config = this.spotifyConfigService.getSpotifyConfig();
+    this.playlists = this.config.favoritePlaylists;
     this.getEditablePlaylists();
   }
 
