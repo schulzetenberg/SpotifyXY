@@ -22,8 +22,8 @@ import { SpotifyService } from '../shared/spotify.service';
 })
 export class SpotifyConfigComponent implements OnInit {
   playlists = [];
-  config: {};
-  editablePlaylists: [];
+  config: any;
+  editablePlaylists = [];
 
   constructor(
     private router: Router,

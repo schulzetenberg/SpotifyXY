@@ -1,39 +1,47 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { enableLiveReload } from 'electron-compile';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
+import * as path from 'path';
+import * as url from 'url';
+
 const fs = require('fs');
 const electronOauth2 = require('electron-oauth2');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: Electron.BrowserWindow | null;
+let win, serve;
+const args = process.argv.slice(1);
+serve = args.some(val => val === '--serve');
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
+function createWindow() {
 
-if (isDevMode) {
-  enableLiveReload();
-}
+  const electronScreen = screen;
+  const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
-const createWindow = async () => {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  win = new BrowserWindow({
+    x: 0,
+    y: 0,
+    width: size.width,
+    height: size.height
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
-
-  // Open the DevTools.
-  if (isDevMode) {
-    mainWindow.webContents.openDevTools();
+  if (serve) {
+    require('electron-reload')(__dirname, {
+     electron: require(`${__dirname}/node_modules/electron`)});
+    win.loadURL('http://localhost:4200');
+  } else {
+    win.loadURL(url.format({
+      pathname: path.join(__dirname, 'dist/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
   }
 
+  win.webContents.openDevTools();
+
   // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
+  win.on('closed', () => {
+    // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null;
+    win = null;
   });
 
   const config = JSON.parse(fs.readFileSync('config/spotify-config.json', 'utf8'));
@@ -73,30 +81,37 @@ const createWindow = async () => {
       console.log('Error while getting token', err);
     });
   });
+}
 
-};
+try {
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.on('ready', createWindow);
 
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+  // Quit when all windows are closed.
+  app.on('window-all-closed', () => {
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
+  app.on('activate', () => {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (win === null) {
+      createWindow();
+    }
+  });
+
+} catch (e) {
+  // Catch Error
+  // throw e;
+}
+
 
 ipcMain.on('setSpotifyConfig', (event, arg) => {
   fs.writeFile('config/spotify-config.json', JSON.stringify(arg, null, 2), 'utf8');

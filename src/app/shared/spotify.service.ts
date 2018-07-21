@@ -37,7 +37,7 @@ interface HttpRequestOptions {
   url: string,
   search?: Object,
   body?: Object,
-  json?: Boolean,
+  json?: boolean,
 }
 
 @Injectable()

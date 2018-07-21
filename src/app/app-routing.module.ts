@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { MainComponent } from './main/main.component'
-import { SpotifyConfigComponent } from './spotify-config/spotify-config.component'
+import { Routes, RouterModule } from '@angular/router';
+
+import { MainComponent } from './main/main.component';
+import { SpotifyConfigComponent } from './spotify-config/spotify-config.component';
 import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
@@ -20,12 +21,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, {useHash: true})
-  ],
-  exports: [
-    RouterModule
-  ],
-  declarations: []
+    imports: [
+      RouterModule.forRoot(routes, { useHash: true })
+    ],
+    exports: [
+      RouterModule
+    ]
 })
 export class AppRoutingModule { }
