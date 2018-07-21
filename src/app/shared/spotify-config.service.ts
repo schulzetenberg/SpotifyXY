@@ -9,10 +9,14 @@ export class SpotifyConfigService {
   }
 
   public getSpotifyConfig() {
-    return JSON.parse(this._electronService.ipcRenderer.sendSync('getSpotifyConfig', ''));
+    return this._electronService.ipcRenderer.sendSync('getSpotifyConfig', '');
   }
 
   public setSpotifyConfig(config) {
     this._electronService.ipcRenderer.send('setSpotifyConfig', config);
+  }
+
+  public viewUserSettingsFile() {
+    this._electronService.ipcRenderer.send('viewUserSettingsFile', '');
   }
 }

@@ -6,34 +6,48 @@ const fs = require('fs');
 const electronOauth2 = require('electron-oauth2');
 const Store = require('electron-store');
 
-let win, serve, config;
+let win, serve;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
 
-const store = new Store({
-  name: 'user-preferences',
+const userSettings = new Store({
+  name: 'user-settings',
   defaults: {
-    windowBounds: { width: 9999, height: 9999 }
+    windowBounds: { width: 9999, height: 9999 },
+    userEditable: {
+      rememberWindowSize: true,
+      spotifyUsername: '',
+      spotifyId: '',
+      spotifySecret: '',
+      favoritePlaylists: [],
+      seekSeconds: 30
+    }
   }
 });
 
 function createWindow() {
-
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
-  const savedWidth = store.get('windowBounds.width');
-  const savedHeight = store.get('windowBounds.height');
+  const savedWidth = userSettings.get('windowBounds.width');
+  const savedHeight = userSettings.get('windowBounds.height');
+  let width, height;
+
+  if (!userSettings.get('userEditable.rememberWindowSize')) {
+    width = size.width;
+    height = size.height;
+  } else {
+    // Set the window size to the previously saved value, up to the full screen size
+    width = (size.width < savedWidth) ? size.width : savedWidth;
+    height = (size.height < savedHeight) ? size.height : savedHeight;
+  }
 
   // Create the browser window
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    // Set the window size to the previously saved value, up to the full screen size
-    width: (size.width < savedWidth) ? size.width : savedWidth,
-    height: (size.height < savedHeight) ? size.height : savedHeight,
+    width,
+    height
   });
-
-  store.openInEditor();
 
   if (serve) {
     require('electron-reload')(__dirname, {
@@ -47,12 +61,12 @@ function createWindow() {
     }));
   }
 
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.on('resize', () => {
     // Save updated window size
     const { width, height } = win.getBounds();
-    store.set('windowBounds', { width, height });
+    userSettings.set('windowBounds', { width, height });
   });
 
   // Emitted when the window is closed
@@ -63,19 +77,9 @@ function createWindow() {
     win = null;
   });
 
-  try {
-    config = JSON.parse(fs.readFileSync('config/spotify-config.json', 'utf8'));
-  } catch (err) {
-      if (err.code === 'ENOENT') {
-        console.log('File not found!');
-      } else {
-        throw err;
-      }
-  }
-
   const oauthConfig = {
-    clientId: config.spotifyId,
-    clientSecret: config.spotifySecret,
+    clientId: userSettings.get('userEditable.spotifyId'),
+    clientSecret: userSettings.get('userEditable.spotifySecret'),
     authorizationUrl: 'https://accounts.spotify.com/authorize',
     tokenUrl: 'https://accounts.spotify.com/api/token',
     useBasicAuthorizationHeader: false,
@@ -111,7 +115,6 @@ function createWindow() {
 }
 
 try {
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
@@ -133,7 +136,6 @@ try {
       createWindow();
     }
   });
-
 } catch (e) {
   // Catch Error
   // throw e;
@@ -141,10 +143,13 @@ try {
 
 
 ipcMain.on('setSpotifyConfig', (event, arg) => {
-  fs.writeFile('config/spotify-config.json', JSON.stringify(arg, null, 2), 'utf8');
+  userSettings.set('userEditable', arg);
 });
 
 ipcMain.on('getSpotifyConfig', (event, arg) => {
-  const config = fs.readFileSync('config/spotify-config.json', 'utf8');
-  event.returnValue = config;
+  event.returnValue = userSettings.get('userEditable');
+});
+
+ipcMain.on('viewUserSettingsFile', (event, arg) => {
+  userSettings.openInEditor();
 });

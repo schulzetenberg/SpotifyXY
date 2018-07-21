@@ -59,6 +59,10 @@ export class SpotifyConfigComponent implements OnInit {
     });
   }
 
+  public viewUserSettingsFile() {
+    this.spotifyConfigService.viewUserSettingsFile();
+  }
+
   ngOnInit() {
     this.config = this.spotifyConfigService.getSpotifyConfig();
     this.playlists = this.config.favoritePlaylists;
