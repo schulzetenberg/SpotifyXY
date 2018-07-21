@@ -4,23 +4,36 @@ import * as url from 'url';
 
 const fs = require('fs');
 const electronOauth2 = require('electron-oauth2');
+const Store = require('electron-store');
 
-let win, serve;
+let win, serve, config;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
+
+const store = new Store({
+  name: 'user-preferences',
+  defaults: {
+    windowBounds: { width: 9999, height: 9999 }
+  }
+});
 
 function createWindow() {
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
+  const savedWidth = store.get('windowBounds.width');
+  const savedHeight = store.get('windowBounds.height');
 
-  // Create the browser window.
+  // Create the browser window
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: size.width,
-    height: size.height
+    // Set the window size to the previously saved value, up to the full screen size
+    width: (size.width < savedWidth) ? size.width : savedWidth,
+    height: (size.height < savedHeight) ? size.height : savedHeight,
   });
+
+  store.openInEditor();
 
   if (serve) {
     require('electron-reload')(__dirname, {
@@ -34,9 +47,15 @@ function createWindow() {
     }));
   }
 
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
-  // Emitted when the window is closed.
+  win.on('resize', () => {
+    // Save updated window size
+    const { width, height } = win.getBounds();
+    store.set('windowBounds', { width, height });
+  });
+
+  // Emitted when the window is closed
   win.on('closed', () => {
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
@@ -44,7 +63,15 @@ function createWindow() {
     win = null;
   });
 
-  const config = JSON.parse(fs.readFileSync('config/spotify-config.json', 'utf8'));
+  try {
+    config = JSON.parse(fs.readFileSync('config/spotify-config.json', 'utf8'));
+  } catch (err) {
+      if (err.code === 'ENOENT') {
+        console.log('File not found!');
+      } else {
+        throw err;
+      }
+  }
 
   const oauthConfig = {
     clientId: config.spotifyId,
