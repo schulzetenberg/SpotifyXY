@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <div class="col my-4">
+    <div class="col-md-6 my-4">
       <mat-card>
         <mat-card-title>User Settings</mat-card-title>
         <form class="sm-form" #spotifyForm="ngForm" (ngSubmit)="submitSpotifyConfig(spotifyForm)">
@@ -40,7 +40,7 @@
         </form>
       </mat-card>
     </div>
-    <div class="col my-4">
+    <div class="col-md-3 my-4">
       <mat-card>
         <mat-card-title>Admin</mat-card-title>
         <button mat-raised-button (click)="viewUserSettingsFile()" type="button">

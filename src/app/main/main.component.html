@@ -1,31 +1,73 @@
 <div class="container">
   <div class="row">
-    <div class="col my-4">
+    <div class="col-md-3 my-4">
       <mat-card>
-          <mat-card-title>Media Controls</mat-card-title>
-          <button mat-raised-button (click)="play()">Play</button>
-          <button mat-raised-button (click)="pause()">Pause</button>
-          <button mat-raised-button (click)="seek()">Seek To {{ seekTime }} Seconds</button>
-          <button mat-raised-button>Previous (TOOO)</button>
-          <button mat-raised-button>Next (TOOO)</button>
+        <mat-card-title>
+          <i class="material-icons">queue_music</i>
+          Media Controls
+        </mat-card-title>
+        <div class="row">
+          <button mat-mini-fab color="primary" (click)="previous()">
+            <i class="material-icons">skip_previous</i>
+          </button>
+          <button mat-mini-fab color="primary" (click)="pause()">
+            <i class="material-icons">pause</i>
+          </button>
+          <button mat-mini-fab color="primary" (click)="play()">
+            <i class="material-icons">play_arrow</i>
+          </button>
+          <button mat-mini-fab color="primary" (click)="next()">
+            <i class="material-icons">skip_next</i>
+          </button>
+        </div>
+        <div class="row mt-3">
+          <!-- TODO
+          <button mat-mini-fab color="primary" title="Seek backward 10 seconds" (click)="seek()">
+            <i class="material-icons">replay_10</i>
+          </button>
+          -->
+          <button mat-fab color="secondary" title="Seek to {{ seekTime }} seconds" (click)="seek()">
+            <i class="material-icons">av_timer</i>
+            {{ seekTime }}s
+          </button>
+          <!-- TODO
+          <button mat-mini-fab color="primary" title="Seek forward 10 seconds" (click)="seek()">
+            <i class="material-icons">forward_10</i>
+          </button>
+          -->
+        </div>
       </mat-card>
     </div>
-    <div class="col my-4">
+    <div class="col-md-3 my-4">
       <mat-card>
-        <mat-card-title>Remove From Playlist</mat-card-title>
-        <button mat-raised-button (click)="removeSongFromPlaylist()">Remove Song From Current Playlist</button>
-        <button mat-raised-button (click)="removeSongFromPlaylist(true)">Remove Song From Current Playlist (Plus Seek)</button>
+        <mat-card-title>
+          <i class="material-icons">block</i>
+          Remove From Playlist
+        </mat-card-title>
+        <button mat-raised-button title="Remove song from current playlist" (click)="removeSongFromPlaylist()">Current Playlist</button>
+        <button mat-raised-button title="Remove song from current playlist plus skip to next song" (click)="removeSongFromPlaylist(true)">
+          Current Playlist
+          <i class="material-icons">skip_next</i>
+        </button>
       </mat-card>
     </div>
-    <div class="col my-4">
+    <div class="col-md-3 my-4">
       <mat-card>
-        <mat-card-title>Add to Playlist</mat-card-title>
-        <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">{{ playlist.name }}</button>
+        <mat-card-title>
+          <i class="material-icons">add_circle_outline</i>
+          Add to Playlist
+        </mat-card-title>
+        <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">
+          {{ playlist.name }}
+        </button>
       </mat-card>
     </div>
-    <div class="col my-4">
+    <div class="col-md-3 my-4">
       <mat-card>
-        <mat-card-title>Admin</mat-card-title>
+        <mat-card-title>
+          <i class="material-icons">settings</i>
+          Admin
+        </mat-card-title>
         <button mat-raised-button (click)="removeToken()">Remove API Token</button>
       </mat-card>
     </div>

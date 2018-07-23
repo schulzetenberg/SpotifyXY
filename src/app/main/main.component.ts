@@ -42,6 +42,14 @@ export class MainComponent implements OnInit {
     this.spotifyService.startPlayback().subscribe();
   }
 
+  previous() {
+      this.spotifyService.previousSong().subscribe();
+  }
+
+  next() {
+      this.spotifyService.nextSong().subscribe();
+  }
+
   pause() {
     this.spotifyService.pausePlayback().subscribe();
   }

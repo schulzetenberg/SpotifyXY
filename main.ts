@@ -46,7 +46,9 @@ function createWindow() {
     x: 0,
     y: 0,
     width,
-    height
+    height,
+    minWidth: 660,
+    minHeight: 150
   });
 
   if (serve) {

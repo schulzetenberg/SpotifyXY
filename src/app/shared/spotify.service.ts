@@ -595,6 +595,13 @@ export class SpotifyService {
     }).map(res => res.json());
   }
 
+  previousSong() {
+    return this.api({
+      method: 'post',
+      url: `/me/player/previous`,
+    }).map(res => res.json());
+  }
+
   nextSong() {
     return this.api({
       method: 'post',
