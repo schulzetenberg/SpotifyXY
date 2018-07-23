@@ -1,13 +1,33 @@
-<mat-card>
-  <button mat-raised-button (click)="seek()">Seek To {{ seekTime }} Seconds</button>
-
-    <button mat-raised-button (click)="removeSongFromPlaylist()">Remove Song From Current Playlist</button>
-    <button mat-raised-button (click)="removeSongFromPlaylist(true)">Remove Song From Current Playlist (Plus Seek)</button>
-    <button mat-raised-button (click)="play()">Play</button>
-    <button mat-raised-button (click)="pause()">Pause</button>
-  <button mat-raised-button (click)="removeToken()">Remove API Token</button>
-</mat-card>
-<mat-card>
-  Add Song to Playlist
-  <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">{{ playlist.name }}</button>
-</mat-card>
+<div class="container">
+  <div class="row">
+    <div class="col my-4">
+      <mat-card>
+          <mat-card-title>Media Controls</mat-card-title>
+          <button mat-raised-button (click)="play()">Play</button>
+          <button mat-raised-button (click)="pause()">Pause</button>
+          <button mat-raised-button (click)="seek()">Seek To {{ seekTime }} Seconds</button>
+          <button mat-raised-button>Previous (TOOO)</button>
+          <button mat-raised-button>Next (TOOO)</button>
+      </mat-card>
+    </div>
+    <div class="col my-4">
+      <mat-card>
+        <mat-card-title>Remove From Playlist</mat-card-title>
+        <button mat-raised-button (click)="removeSongFromPlaylist()">Remove Song From Current Playlist</button>
+        <button mat-raised-button (click)="removeSongFromPlaylist(true)">Remove Song From Current Playlist (Plus Seek)</button>
+      </mat-card>
+    </div>
+    <div class="col my-4">
+      <mat-card>
+        <mat-card-title>Add to Playlist</mat-card-title>
+        <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">{{ playlist.name }}</button>
+      </mat-card>
+    </div>
+    <div class="col my-4">
+      <mat-card>
+        <mat-card-title>Admin</mat-card-title>
+        <button mat-raised-button (click)="removeToken()">Remove API Token</button>
+      </mat-card>
+    </div>
+  </div>
+</div>

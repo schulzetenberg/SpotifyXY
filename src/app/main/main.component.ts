@@ -7,7 +7,7 @@ import { SpotifyConfigService } from '../shared/spotify-config.service';
   moduleId: module.id,
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css'],
+  styleUrls: ['./main.component.scss'],
 
   providers: [
     SpotifyConfigService,

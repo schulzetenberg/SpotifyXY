@@ -1,45 +1,53 @@
-<mat-card>
-  <form class="sm-form" #spotifyForm="ngForm" (ngSubmit)="submitSpotifyConfig(spotifyForm)">
-    <mat-form-field class="full-width">
-      <input matInput placeholder="Spotify Username" name="spotifyUsername" [(ngModel)]="config.spotifyUsername">
-    </mat-form-field>
+<div class="container">
+  <div class="row">
+    <div class="col my-4">
+      <mat-card>
+        <mat-card-title>User Settings</mat-card-title>
+        <form class="sm-form" #spotifyForm="ngForm" (ngSubmit)="submitSpotifyConfig(spotifyForm)">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Spotify Username" name="spotifyUsername" [(ngModel)]="config.spotifyUsername">
+          </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <input matInput placeholder="Spotify ID" name="spotifyId" [(ngModel)]="config.spotifyId">
-    </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Spotify ID" name="spotifyId" [(ngModel)]="config.spotifyId">
+          </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <input matInput placeholder="Spotify Secret" name="spotifySecret" [(ngModel)]="config.spotifySecret">
-    </mat-form-field>
-    <mat-form-field class="full-width">
-      <input matInput type="number" placeholder="Seek Time (Seconds)" name="seekSeconds" [(ngModel)]="config.seekSeconds">
-    </mat-form-field>
-    <mat-form-field class="full-width">
-      <mat-select [compareWith]="compareFunc"  placeholder="Favorite Editable Playlists" multiple name="playlists" [(ngModel)]="playlists">
-        <mat-select-trigger>
-          {{ playlists.length ? playlists[0].name : '' }}
-          <span *ngIf="playlists.length > 1" class="example-additional-selection">
-            (+{{ playlists.length - 1 }} others)
-          </span>
-        </mat-select-trigger>
-        <mat-option *ngFor="let playlist of editablePlaylists" [value]="playlist">{{ playlist.name }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button mat-raised-button routerLink="/" type="button">
-      <i class="material-icons">cancel</i>
-      Cancel
-    </button>
-    <button mat-raised-button type="submit">
-      <i class="material-icons">save</i>
-      Save
-    </button>
-  </form>
-</mat-card>
-
-<mat-card>
-  <button mat-raised-button (click)="viewUserSettingsFile()" type="button">
-    <i class="material-icons">build</i>
-    View User Settings File
-  </button>
-</mat-card>
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Spotify Secret" name="spotifySecret" [(ngModel)]="config.spotifySecret">
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput type="number" placeholder="Seek Time (Seconds)" name="seekSeconds" [(ngModel)]="config.seekSeconds">
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-select [compareWith]="compareFunc"  placeholder="Favorite Editable Playlists" multiple name="playlists" [(ngModel)]="playlists">
+              <mat-select-trigger>
+                {{ playlists.length ? playlists[0].name : '' }}
+                <span *ngIf="playlists.length > 1" class="example-additional-selection">
+                  (+{{ playlists.length - 1 }} others)
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let playlist of editablePlaylists" [value]="playlist">{{ playlist.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-raised-button routerLink="/" type="button" class="mx-2">
+            <i class="material-icons">cancel</i>
+            Cancel
+          </button>
+          <button mat-raised-button type="submit" class="float-right mx-2">
+            <i class="material-icons">save</i>
+            Save
+          </button>
+        </form>
+      </mat-card>
+    </div>
+    <div class="col my-4">
+      <mat-card>
+        <mat-card-title>Admin</mat-card-title>
+        <button mat-raised-button (click)="viewUserSettingsFile()" type="button">
+          <i class="material-icons">build</i>
+          View User Settings File
+        </button>
+      </mat-card>
+    </div>
+  </div>
+</div>

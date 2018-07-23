@@ -31,10 +31,13 @@
     "e2e": "npm run postinstall:web && ng e2e"
   },
   "dependencies": {
+    "bootstrap": "4.1.2",
     "electron-oauth2": "3.0.0",
     "electron-store": "2.0.0",
+    "jquery": "3.3.1",
     "lodash": "4.17.10",
     "material-design-icons": "3.0.1",
+    "popper.js": "1.14.3",
     "q": "1.5.1",
     "requestretry": "1.13.0",
     "winston": "3.0.0"
@@ -65,6 +68,7 @@
     "electron": "2.0.3",
     "electron-builder": "20.14.7",
     "electron-reload": "1.2.2",
+    "htmlhint": "0.9.13",
     "jasmine-core": "3.1.0",
     "jasmine-spec-reporter": "4.2.1",
     "karma": "2.0.2",
@@ -78,6 +82,8 @@
     "protractor": "5.3.2",
     "rxjs": "6.1.0",
     "rxjs-compat": "6.2.2",
+    "stylelint": "9.3.0",
+    "stylelint-config-standard": "18.2.0",
     "ts-node": "6.0.3",
     "tslint": "5.10.0",
     "typescript": "2.7.2",
