@@ -30,6 +30,9 @@
             <i class="material-icons">av_timer</i>
             {{ seekTime }}s
           </button>
+          <button mat-fab color="secondary" title="Toggle shuffle" (click)="shuffle()">
+            <i class="material-icons">shuffle</i>
+          </button>
           <!-- TODO
           <button mat-mini-fab color="primary" title="Seek forward 10 seconds" (click)="seek()">
             <i class="material-icons">forward_10</i>
@@ -58,6 +61,17 @@
           Add to Playlist
         </mat-card-title>
         <button mat-raised-button (click)="addToPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">
+          {{ playlist.name }}
+        </button>
+      </mat-card>
+    </div>
+    <div class="col-md-3 my-4">
+      <mat-card>
+        <mat-card-title>
+          <i class="material-icons">play_circle_outline</i>
+          Play Playlist
+        </mat-card-title>
+        <button mat-raised-button (click)="playPlaylist(playlist)" *ngFor="let playlist of config.favoritePlaylists">
           {{ playlist.name }}
         </button>
       </mat-card>

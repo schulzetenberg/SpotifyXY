@@ -23,7 +23,6 @@ import { SpotifyConfigComponent } from './spotify-config/spotify-config.componen
 import { MainComponent } from './main/main.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-import { SettingsComponent } from './settings/settings.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -38,7 +37,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     MainComponent,
     HeaderComponent,
     FooterComponent,
-    SettingsComponent,
   ],
   imports: [
     HttpModule,

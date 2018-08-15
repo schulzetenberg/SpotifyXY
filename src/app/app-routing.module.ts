@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { MainComponent } from './main/main.component';
 import { SpotifyConfigComponent } from './spotify-config/spotify-config.component';
-import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {
@@ -11,13 +10,9 @@ const routes: Routes = [
     component: MainComponent,
   },
   {
-    path: 'spotify-config',
+    path: 'config',
     component: SpotifyConfigComponent,
-  },
-  {
-    path: 'settings',
-    component: SettingsComponent,
-  },
+  }
 ];
 
 @NgModule({

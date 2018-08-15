@@ -2,42 +2,42 @@
 // This code has since been modifed to work with electron service
 
 import { Injectable, Inject, Optional } from '@angular/core';
-import { Http, Headers, Response, Request } from '@angular/http'
+import { Http, Headers, Response, Request } from '@angular/http';
 import { HttpModule } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { ElectronService } from 'ngx-electron';
 import 'rxjs/Rx';
 
 export interface SpotifyConfig {
-  clientId: string,
-  redirectUri: string,
-  scope: string,
-  apiBase: string,
+  clientId: string;
+  redirectUri: string;
+  scope: string;
+  apiBase: string;
 }
 
 export interface SpotifyOptions {
-  limit?: number,
-  offset?: number,
-  market?: string,
-  album_type?: string,
-  country?: string,
-  type?: string,
-  q?: string,
-  timestamp?: string,
-  locale?: string,
-  public?: boolean,
-  name?: string,
-  time_range?: string,
-  after?: string,
-  before?: string,
+  limit?: number;
+  offset?: number;
+  market?: string;
+  album_type?: string;
+  country?: string;
+  type?: string;
+  q?: string;
+  timestamp?: string;
+  locale?: string;
+  public?: boolean;
+  name?: string;
+  time_range?: string;
+  after?: string;
+  before?: string;
 }
 
 interface HttpRequestOptions {
-  method?: string,
-  url: string,
-  search?: Object,
-  body?: Object,
-  json?: boolean,
+  method?: string;
+  url: string;
+  search?: Object;
+  body?: Object;
+  json?: boolean;
 }
 
 @Injectable()
@@ -588,10 +588,28 @@ export class SpotifyService {
     }).map(res => res.json());
   }
 
+  playPlaylist(userId, playlistId) {
+    return this.api({
+      method: 'put',
+      url: `/me/player/play`,
+      body: {
+        context_uri: `spotify:user:${userId}:playlist:${playlistId}`,
+      },
+    }).map(res => res.json());
+  }
+
   pausePlayback() {
     return this.api({
       method: 'put',
       url: `/me/player/pause`,
+    }).map(res => res.json());
+  }
+
+  // Default state of on. State=false turns off shuffle
+  shuffle(state: boolean = true) {
+    return this.api({
+      method: 'put',
+      url: `/me/player/shuffle?state=${state}`,
     }).map(res => res.json());
   }
 

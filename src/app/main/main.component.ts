@@ -22,6 +22,7 @@ export class MainComponent implements OnInit {
   apiResponse: any;
   config: any;
   seekTime: number;
+  shuffleVal: boolean; // TODO: Currently we are assuming shuffle is off. Better implementation could check actual status
 
   constructor(
     private spotifyService: SpotifyService,
@@ -66,6 +67,18 @@ export class MainComponent implements OnInit {
         }
       });
     });
+  }
+
+  shuffle() {
+    this.shuffleVal = !this.shuffleVal; // Toggle value
+      this.spotifyService.shuffle(this.shuffleVal).subscribe();
+  }
+
+  async playPlaylist(playlist: any) {
+    // First turn on shuffle so we dont play the first song in the playlist as that is usually not desired behavior
+    await this.spotifyService.shuffle(true).toPromise();
+
+    await this.spotifyService.playPlaylist(this.config.spotifyUsername, playlist.id).toPromise();
   }
 
   removeSongFromPlaylist(seek?: boolean) {
