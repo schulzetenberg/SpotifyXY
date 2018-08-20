@@ -47,40 +47,35 @@ export class MainComponent implements OnInit {
   seek() {
     this.spotifyService.seek(this.seekTime).subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
   play() {
     this.spotifyService.startPlayback().subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
   previous() {
     this.spotifyService.previousSong().subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
   next() {
     this.spotifyService.nextSong().subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
   pause() {
     this.spotifyService.pausePlayback().subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
@@ -88,8 +83,7 @@ export class MainComponent implements OnInit {
     let inError = false;
 
     const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
       inError = true;
     });
 
@@ -104,8 +98,7 @@ export class MainComponent implements OnInit {
           console.log('Error adding playlist track');
         }
       }, (err) => {
-        this.openSnackBar('Error contacting Spotify API');
-        console.log('Error contacting Spotify API', err);
+        this.httpErrorHandler(err);
       });
     }
   }
@@ -115,8 +108,7 @@ export class MainComponent implements OnInit {
 
     this.spotifyService.shuffle(this.shuffleVal).subscribe(() => {
     }, (err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
     });
   }
 
@@ -125,15 +117,13 @@ export class MainComponent implements OnInit {
 
     // First turn on shuffle so we dont play the first song in the playlist as that is usually not desired behavior
     await this.spotifyService.shuffle(true).toPromise().catch((err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
       inError = true;
     });
 
     if (!inError) {
       await this.spotifyService.playPlaylist(this.config.spotifyUsername, playlist.id).toPromise().catch((err) => {
-        this.openSnackBar('Error contacting Spotify API');
-        console.log('Error contacting Spotify API', err);
+        this.httpErrorHandler(err);
       });
     }
   }
@@ -142,8 +132,7 @@ export class MainComponent implements OnInit {
     let inError = false;
 
     const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
-      this.openSnackBar('Error contacting Spotify API');
-      console.log('Error contacting Spotify API', err);
+      this.httpErrorHandler(err);
       inError = true;
     });
 
@@ -156,15 +145,7 @@ export class MainComponent implements OnInit {
         const userId = this.parseUri('user', context.uri);
 
         const removePlaylistData = await this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).toPromise().catch((err) => {
-          if (err._body) {
-            const body = JSON.parse(err._body);
-            this.openSnackBar(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
-            console.log(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
-          } else {
-            this.openSnackBar('Error contacting Spotify API');
-            console.log('Error contacting Spotify API', err);
-          }
-
+          this.httpErrorHandler(err);
           inError = true;
         });
 
@@ -176,8 +157,7 @@ export class MainComponent implements OnInit {
 
         if (!inError && seek) {
           await this.spotifyService.nextSong().toPromise().catch((err) => {
-            this.openSnackBar('Error contacting Spotify API');
-            console.log('Error contacting Spotify API', err);
+            this.httpErrorHandler(err);
             inError = true;
           });
 
@@ -189,8 +169,7 @@ export class MainComponent implements OnInit {
                 inError = true;
               }
             }).catch((err) => {
-              this.openSnackBar('Error contacting Spotify API');
-              console.log('Error contacting Spotify API', err);
+              this.httpErrorHandler(err);
               inError = true;
             });
           }
@@ -199,6 +178,17 @@ export class MainComponent implements OnInit {
         this.openSnackBar('Could not get playlist data. Assuming we are not currently listening to a playlist.');
         console.log('Could not get playlist data. Assuming we are not currently listening to a playlist.');
       }
+    }
+  }
+
+  httpErrorHandler(err) {
+    if (err._body) {
+      const body = JSON.parse(err._body);
+      this.openSnackBar(`${body.error.message}`);
+      console.log(`Spotify Error! Status: ${body.error.status}. Message: ${body.error.message}`);
+    } else {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
     }
   }
 

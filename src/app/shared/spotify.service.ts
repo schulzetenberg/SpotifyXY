@@ -727,7 +727,7 @@ export class SpotifyService {
           console.log('No OAUTH token. Send the request.');
           self._electronService.ipcRenderer.send('spotify-oauth');
         } else {
-          const now = new Date().toString();
+          const now = new Date().getSeconds().toString();
           const exp = localStorage.getItem('spotify-token-expiration');
 
           if (!exp || (exp < now)) {
