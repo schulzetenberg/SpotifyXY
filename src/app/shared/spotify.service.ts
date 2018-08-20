@@ -6,6 +6,7 @@ import { Http, Headers, Response, Request } from '@angular/http';
 import { HttpModule } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { ElectronService } from 'ngx-electron';
+import { timeout } from 'rxjs/operators';
 import 'rxjs/Rx';
 
 export interface SpotifyConfig {
@@ -710,7 +711,7 @@ export class SpotifyService {
        body: JSON.stringify(requestOptions.body),
        headers: self.getHeaders(requestOptions.json)
      }));
-   });
+   }).timeout(5000); // Timeout of 5 seconds
   }
 
   // Before each HTTP request, call this function to verify we have a valid auth token
@@ -740,9 +741,12 @@ export class SpotifyService {
 
         // NOTE: This is a security risk having all the token data saved in localstorage. Change this for a production application
         self._electronService.ipcRenderer.on('spotify-oauth-reply', function(event: any, arg: any) {
-          // Using the expires_in field, we can determine how long we have until we have to get a new token (Current value for Spotify API is 60 min.)
+          // Using the expires_in field, we can determine how long we have until we have to get a new token
+          // Current value for Spotify API is 60 min.
           const exp = new Date();
-          exp.setSeconds(exp.getSeconds() + arg.expires_in - 30); // Set the expiration date 30 seconds before the token actually expires to have time to get a new token
+
+          // Set the expiration date 30 seconds before the token actually expires to have time to get a new token
+          exp.setSeconds(exp.getSeconds() + arg.expires_in - 30);
           localStorage.setItem('spotify-token-expiration', exp.toString());
           console.log('Token EXP', localStorage.getItem('spotify-token-expiration'));
 

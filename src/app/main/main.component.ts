@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { MatSnackBar } from '@angular/material';
+
 import { SpotifyService } from '../shared/spotify.service';
 import { SpotifyConfigService } from '../shared/spotify-config.service';
 
@@ -27,6 +29,7 @@ export class MainComponent implements OnInit {
   constructor(
     private spotifyService: SpotifyService,
     private spotifyConfigService: SpotifyConfigService,
+    public snackBar: MatSnackBar,
   ) {
   }
 
@@ -35,85 +38,168 @@ export class MainComponent implements OnInit {
     this.seekTime = this.config.seekSeconds || 30; // Default of 30 seconds
   }
 
+  openSnackBar(message: string) {
+    this.snackBar.open(message, '', {
+      duration: 5000,
+    });
+  }
+
   seek() {
-    this.spotifyService.seek(this.seekTime).subscribe();
+    this.spotifyService.seek(this.seekTime).subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
   play() {
-    this.spotifyService.startPlayback().subscribe();
+    this.spotifyService.startPlayback().subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
   previous() {
-      this.spotifyService.previousSong().subscribe();
+    this.spotifyService.previousSong().subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
   next() {
-      this.spotifyService.nextSong().subscribe();
+    this.spotifyService.nextSong().subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
   pause() {
-    this.spotifyService.pausePlayback().subscribe();
+    this.spotifyService.pausePlayback().subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
-  addToPlaylist(playlist: any) {
-    this.spotifyService.getPlayStatus().subscribe(data => {
-      const tracks = this.parseUri('track', data.item.uri);
-      const userId = this.parseUri('user', data.context.uri);
+  async addToPlaylist(playlist: any) {
+    let inError = false;
+
+    const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+      inError = true;
+    });
+
+    if (!inError) {
+      const tracks = this.parseUri('track', playStatusData.item.uri);
+      const userId = this.parseUri('user', playStatusData.context.uri);
 
       // TODO: Prevent duplicate songs
       this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(addData => {
         if (!addData.snapshot_id) {
-          return console.log('Error adding playlist track');
+          this.openSnackBar('Error adding playlist track');
+          console.log('Error adding playlist track');
         }
+      }, (err) => {
+        this.openSnackBar('Error contacting Spotify API');
+        console.log('Error contacting Spotify API', err);
       });
-    });
+    }
   }
 
   shuffle() {
     this.shuffleVal = !this.shuffleVal; // Toggle value
-      this.spotifyService.shuffle(this.shuffleVal).subscribe();
+
+    this.spotifyService.shuffle(this.shuffleVal).subscribe(() => {
+    }, (err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+    });
   }
 
   async playPlaylist(playlist: any) {
-    // First turn on shuffle so we dont play the first song in the playlist as that is usually not desired behavior
-    await this.spotifyService.shuffle(true).toPromise();
+    let inError = false;
 
-    await this.spotifyService.playPlaylist(this.config.spotifyUsername, playlist.id).toPromise();
+    // First turn on shuffle so we dont play the first song in the playlist as that is usually not desired behavior
+    await this.spotifyService.shuffle(true).toPromise().catch((err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+      inError = true;
+    });
+
+    if (!inError) {
+      await this.spotifyService.playPlaylist(this.config.spotifyUsername, playlist.id).toPromise().catch((err) => {
+        this.openSnackBar('Error contacting Spotify API');
+        console.log('Error contacting Spotify API', err);
+      });
+    }
   }
 
-  removeSongFromPlaylist(seek?: boolean) {
-    this.spotifyService.getPlayStatus().subscribe(data => {
-      const tracks = this.parseUri('track', data.item.uri);
-      const context = data.context;
+  async removeSongFromPlaylist(seek?: boolean) {
+    let inError = false;
+
+    const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
+      this.openSnackBar('Error contacting Spotify API');
+      console.log('Error contacting Spotify API', err);
+      inError = true;
+    });
+
+    if (!inError) {
+      const tracks = this.parseUri('track', playStatusData.item.uri);
+      const context = playStatusData.context;
 
       if (tracks && context && context.type === 'playlist' && context.uri) {
         const playlistId = this.parseUri('playlist', context.uri);
         const userId = this.parseUri('user', context.uri);
 
-        this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).subscribe(removeData => {
-          if (!removeData.snapshot_id) {
-            return console.log('Error removing playlist track');
+        const removePlaylistData = await this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).toPromise().catch((err) => {
+          if (err._body) {
+            const body = JSON.parse(err._body);
+            this.openSnackBar(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
+            console.log(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
+          } else {
+            this.openSnackBar('Error contacting Spotify API');
+            console.log('Error contacting Spotify API', err);
           }
 
-          if (seek) {
-            this.spotifyService.nextSong().subscribe(() => {
-                this.spotifyService.seek(this.seekTime).subscribe(dataSeek => {
-                  if (dataSeek.status !== 204) {
-                    console.log(`Error seeking: ${dataSeek.statusText}`);
-                  }
-                });
+          inError = true;
+        });
+
+        if (!inError && !removePlaylistData.snapshot_id) {
+          this.openSnackBar('Error removing playlist track');
+          console.log('Error removing playlist track');
+          inError = true;
+        }
+
+        if (!inError && seek) {
+          await this.spotifyService.nextSong().toPromise().catch((err) => {
+            this.openSnackBar('Error contacting Spotify API');
+            console.log('Error contacting Spotify API', err);
+            inError = true;
+          });
+
+          if (!inError) {
+            this.spotifyService.seek(this.seekTime).toPromise().then((dataSeek) => {
+              if (dataSeek.status !== 204) {
+                this.openSnackBar(`Error seeking: ${dataSeek.statusText}`);
+                console.log(`Error seeking: ${dataSeek.statusText}`);
+                inError = true;
+              }
+            }).catch((err) => {
+              this.openSnackBar('Error contacting Spotify API');
+              console.log('Error contacting Spotify API', err);
+              inError = true;
             });
           }
-        }, removeErr => {
-          if (removeErr._body) {
-            const body = JSON.parse(removeErr._body);
-            console.log(`Error removing song from playlist. Status: ${body.error.status}. Message: ${body.error.message}`);
-          }
-        });
+        }
       } else {
+        this.openSnackBar('Could not get playlist data. Assuming we are not currently listening to a playlist.');
         console.log('Could not get playlist data. Assuming we are not currently listening to a playlist.');
       }
-    });
+    }
   }
 
   // example uri: 'spotify:user:sczo13au5tgxr1cnsttqasqz5:playlist:1MBIggvHjECvRqnxUa3LX2'
