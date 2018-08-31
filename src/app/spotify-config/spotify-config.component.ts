@@ -31,7 +31,7 @@ export class SpotifyConfigComponent implements OnInit {
     private spotifyService: SpotifyService,
   ) { }
 
-  public submitSpotifyConfig(form: NgForm) {
+  submitSpotifyConfig(form: NgForm) {
     const saveData = form.value;
     saveData.favoritePlaylists = this.playlists;
     this.spotifyConfigService.setSpotifyConfig(form.value);
@@ -42,9 +42,9 @@ export class SpotifyConfigComponent implements OnInit {
     return c1 && c2 ? c1.id === c2.id : false;
 }
 
-  public getEditablePlaylists() {
+  getEditablePlaylists() {
     // Spotify API only allows 50 playlists at a time
-    this.spotifyService.getCurrentUserPlaylists({ limit: 50 }).subscribe(data => {
+    this.spotifyService.getCurrentUserPlaylists({ limit: 50 }).toPromise().then((data) => {
       const { spotifyUsername } = this.config;
       const editablePlaylists = [];
 
@@ -56,10 +56,13 @@ export class SpotifyConfigComponent implements OnInit {
       });
 
       this.editablePlaylists = editablePlaylists;
+    }).catch((err) => {
+      // TODO: use HTTP Error Handler function
+      console.log(err);
     });
   }
 
-  public viewUserSettingsFile() {
+  viewUserSettingsFile() {
     this.spotifyConfigService.viewUserSettingsFile();
   }
 

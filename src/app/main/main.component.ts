@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { MatSnackBar } from '@angular/material';
 
@@ -10,7 +11,6 @@ import { SpotifyConfigService } from '../shared/spotify-config.service';
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-
   providers: [
     SpotifyConfigService,
     SpotifyService, {
@@ -92,11 +92,7 @@ export class MainComponent implements OnInit {
       const userId = this.parseUri('user', playStatusData.context.uri);
 
       // TODO: Prevent duplicate songs
-      this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(addData => {
-        if (!addData.snapshot_id) {
-          this.openSnackBar('Error adding playlist track');
-          console.log('Error adding playlist track');
-        }
+      this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(() => {
       }, (err) => {
         this.httpErrorHandler(err);
       });
@@ -162,12 +158,7 @@ export class MainComponent implements OnInit {
           });
 
           if (!inError) {
-            this.spotifyService.seek(this.seekTime).toPromise().then((dataSeek) => {
-              if (dataSeek.status !== 204) {
-                this.openSnackBar(`Error seeking: ${dataSeek.statusText}`);
-                console.log(`Error seeking: ${dataSeek.statusText}`);
-                inError = true;
-              }
+            this.spotifyService.seek(this.seekTime).toPromise().then(() => {
             }).catch((err) => {
               this.httpErrorHandler(err);
               inError = true;
@@ -181,11 +172,10 @@ export class MainComponent implements OnInit {
     }
   }
 
-  httpErrorHandler(err) {
-    if (err._body) {
-      const body = JSON.parse(err._body);
-      this.openSnackBar(`${body.error.message}`);
-      console.log(`Spotify Error! Status: ${body.error.status}. Message: ${body.error.message}`);
+  httpErrorHandler(err: HttpErrorResponse) {
+    if (err.error && err.error.error) {
+      this.openSnackBar(`${err.error.error.message}`);
+      console.log(`Spotify Error! Status: ${err.error.error.status}. Message: ${err.error.error.message}`);
     } else {
       this.openSnackBar('Error contacting Spotify API');
       console.log('Error contacting Spotify API', err);

@@ -1,13 +1,16 @@
 import 'zone.js/dist/zone-mix';
 import 'reflect-metadata';
 import '../polyfills';
+
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxElectronModule } from 'ngx-electron';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+
+import { NgxElectronModule } from 'ngx-electron';
 
 // NG Translate
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -23,6 +26,9 @@ import { SpotifyConfigComponent } from './spotify-config/spotify-config.componen
 import { MainComponent } from './main/main.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import { AuthExpiredInterceptor } from './blocks/interceptor/auth-expired.interceptor';
+import { AuthInterceptor } from './blocks/interceptor/auth.interceptor';
+import { TokenService } from './shared/token.service';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -59,8 +65,21 @@ export function HttpLoaderFactory(http: HttpClient) {
     })
   ],
   providers: [
-    ElectronService
-  ],
+    ElectronService,
+    TokenService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+      deps: []
+    },
+    {
+        provide: HTTP_INTERCEPTORS,
+        useClass: AuthExpiredInterceptor,
+        multi: true,
+        deps: [Injector]
+    },
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
