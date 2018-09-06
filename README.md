@@ -5,9 +5,11 @@ I find myself saying "I wish Spotify could do X or Y" frequently. This is a app 
 ### Application
 SpotifyXY is a modern cross platform desktop app built using [electron 2](https://github.com/electron/electron).
 
-### UI
+### Download
+See [releases](https://github.com/schulzetenberg/SpotifyXY/releases) to download the pre-built app (Mac, Linux, Windows)
 
-The UI is built using angular 6 & [angular material](https://github.com/angular/material2).
+### UI
+The UI is built using Angular 6 & [angular material](https://github.com/angular/material2).
 
 ### Install dependencies
 ```sh
