@@ -77,7 +77,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthExpiredInterceptor,
         multi: true,
-        deps: [Injector]
+        deps: [Injector, TokenService]
     },
 ],
   bootstrap: [AppComponent]

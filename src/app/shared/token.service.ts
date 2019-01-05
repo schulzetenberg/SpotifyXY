@@ -10,7 +10,7 @@ export class TokenService {
   ) {
   }
 
-  public getToken() {
+  public getToken(replace?: boolean) {
     const self = this;
 
     // TODO: Figure out how to use resolve in the context of a observable instead of converting from a promise
@@ -18,7 +18,11 @@ export class TokenService {
       function (resolve, reject) {
         // TODO: Add error handling and timeouts to the promise
 
-        if (!localStorage.getItem('angular2-spotify-token')) {
+        if (replace) {
+            console.log('Replace token!');
+          // Get a new token, even if we already have what appears to be a valid token
+          self._electronService.ipcRenderer.send('spotify-oauth');
+        } else if (!localStorage.getItem('angular2-spotify-token')) {
           console.log('No OAUTH token. Send the request.');
           self._electronService.ipcRenderer.send('spotify-oauth');
         } else {
@@ -45,7 +49,6 @@ export class TokenService {
           const exp = new Date(new Date().getTime() + (arg.expires_in - 30) * 1000);
           localStorage.setItem('spotify-token-expiration', exp.toString());
           console.log('Token EXP', localStorage.getItem('spotify-token-expiration'));
-
 
           localStorage.setItem('spotify-refresh-token', arg.refresh_token);
           localStorage.setItem('angular2-spotify-token', arg.access_token);

@@ -38,6 +38,10 @@ export class MainComponent implements OnInit {
     this.seekTime = this.config.seekSeconds || 30; // Default of 30 seconds
   }
 
+  setWrongToken() {
+    localStorage.setItem('angular2-spotify-token', '123wrongtoken');
+  }
+
   openSnackBar(message: string) {
     this.snackBar.open(message, '', {
       duration: 5000,
