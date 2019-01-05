@@ -17,12 +17,9 @@ $ npm i
 ```
 ### Run in Development mode
 ```sh
-$ npm run-script start
+$ npm run start
 ```
-### Package
+### Package (Mac, Linux, Windows)
 ```sh
-$ npm run-script build
-$ npm run-script electron:mac
-$ npm run-script electron:linux
-$ npm run-script electron:windows
+$ npm run electron:package
 ```
