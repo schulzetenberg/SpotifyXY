@@ -29,6 +29,7 @@ import { FooterComponent } from './footer/footer.component';
 import { AuthExpiredInterceptor } from './blocks/interceptor/auth-expired.interceptor';
 import { AuthInterceptor } from './blocks/interceptor/auth.interceptor';
 import { TokenService } from './shared/token.service';
+import { DialogLogoutComponent } from './header/dialog-logout.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -42,6 +43,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SpotifyConfigComponent,
     MainComponent,
     HeaderComponent,
+    DialogLogoutComponent,
     FooterComponent,
   ],
   imports: [
@@ -80,6 +82,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [Injector, TokenService]
     },
 ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent ],
+  entryComponents: [DialogLogoutComponent],
 })
 export class AppModule { }

@@ -6,5 +6,6 @@
   </button>
 </mat-toolbar>
 <mat-menu x-position="before" #menu="matMenu">
-  <button mat-menu-item routerLink="config">Config</button>
+  <button mat-menu-item routerLink="config">Settings</button>
+  <button mat-menu-item (click)="logout()">Log Out</button>
 </mat-menu>

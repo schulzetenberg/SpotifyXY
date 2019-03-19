@@ -35,6 +35,7 @@
     "bootstrap": "4.1.2",
     "electron-oauth2": "3.0.0",
     "electron-store": "2.0.0",
+    "fs-extra": "7.0.1",
     "jquery": "3.3.1",
     "lodash": "4.17.10",
     "material-design-icons": "3.0.1",

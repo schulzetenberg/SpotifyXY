@@ -1,6 +1,7 @@
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { clearAppData } from './node/storage';
 
 const fs = require('fs');
 const electronOauth2 = require('electron-oauth2');
@@ -47,7 +48,7 @@ function createWindow() {
     y: 0,
     width,
     height,
-    minWidth: 660,
+    minWidth: 650,
     minHeight: 150
   });
 
@@ -145,6 +146,9 @@ try {
   // throw e;
 }
 
+ipcMain.on('logout', (event, arg) => {
+  clearAppData();
+});
 
 ipcMain.on('setSpotifyConfig', (event, arg) => {
   userSettings.set('userEditable', arg);

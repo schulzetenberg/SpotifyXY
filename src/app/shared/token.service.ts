@@ -10,6 +10,10 @@ export class TokenService {
   ) {
   }
 
+  logout() {
+    this._electronService.ipcRenderer.send('logout', '');
+  }
+
   public getToken(replace?: boolean) {
     const self = this;
 
