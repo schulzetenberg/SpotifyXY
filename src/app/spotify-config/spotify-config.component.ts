@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 
 import { SpotifyConfigService } from '../shared/spotify-config.service';
 import { SpotifyService } from '../shared/spotify.service';
+import { EnvironmentService } from '../shared/environment.service';
 
 @Component({
   moduleId: module.id,
@@ -24,11 +25,13 @@ export class SpotifyConfigComponent implements OnInit {
   playlists = [];
   config: any;
   editablePlaylists = [];
+  isLocal: boolean;
 
   constructor(
     private router: Router,
     private spotifyConfigService: SpotifyConfigService,
     private spotifyService: SpotifyService,
+    private envService: EnvironmentService,
   ) { }
 
   submitSpotifyConfig(form: NgForm) {
@@ -67,6 +70,7 @@ export class SpotifyConfigComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.isLocal = this.envService.isLocal();
     this.config = this.spotifyConfigService.getSpotifyConfig();
     this.playlists = this.config.favoritePlaylists;
     this.getEditablePlaylists();

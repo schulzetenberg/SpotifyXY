@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material';
 
 import { SpotifyService } from '../shared/spotify.service';
 import { SpotifyConfigService } from '../shared/spotify-config.service';
+import { EnvironmentService } from '../shared/environment.service';
 
 @Component({
   moduleId: module.id,
@@ -25,17 +26,39 @@ export class MainComponent implements OnInit {
   config: any;
   seekTime: number;
   shuffleVal: boolean; // TODO: Currently we are assuming shuffle is off. Better implementation could check actual status
+  isLocal: boolean;
 
   constructor(
     private spotifyService: SpotifyService,
     private spotifyConfigService: SpotifyConfigService,
     public snackBar: MatSnackBar,
+    private envService: EnvironmentService,
   ) {
   }
 
   ngOnInit() {
+    this.isLocal = this.envService.isLocal();
+
     this.config = this.spotifyConfigService.getSpotifyConfig();
+    if (!this.config.spotifyUsername) {
+      this.getUsername();
+    }
     this.seekTime = this.config.seekSeconds || 30; // Default of 30 seconds
+  }
+
+  async getUsername() {
+    const username = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
+      // TODO: Show dialog and ask user to retry
+      this.httpErrorHandler(err);
+    });
+
+    if (username) {
+      this.config.spotifyUsername = username;
+      this.spotifyConfigService.setSpotifyConfig(this.config);
+    } else {
+      // TODO: Show dialog and ask user to retry
+      // TODO: Throw error
+    }
   }
 
   setWrongToken() {

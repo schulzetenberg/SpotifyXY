@@ -76,11 +76,11 @@
         </button>
       </mat-card>
     </div>
-    <div class="col-md-3 my-4">
+    <div class="col-md-3 my-4" *ngIf="isLocal">
       <mat-card>
         <mat-card-title>
           <i class="material-icons">settings</i>
-          Admin
+          Admin (Local Only)
         </mat-card-title>
         <button mat-raised-button (click)="removeToken()">Remove API Token</button>
         <button mat-raised-button (click)="setWrongToken()">Set auth token to '123wrongtoken'</button>

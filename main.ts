@@ -1,6 +1,7 @@
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as _ from 'lodash';
 import { clearAppData } from './node/storage';
 
 const fs = require('fs');
@@ -18,8 +19,8 @@ const userSettings = new Store({
     userEditable: {
       rememberWindowSize: true,
       spotifyUsername: '',
-      spotifyId: '',
-      spotifySecret: '',
+      spotifyId: 'ODI2NTI3NTlmMGE4NDM4YmE5NjE3YzZkZTIzZWI1MWU=',
+      spotifySecret: 'MmMzNjY5OTFkYWI3NDU5M2I1NGVjODViYzY5MGUxY2E=',
       favoritePlaylists: [],
       seekSeconds: 30
     }
@@ -82,9 +83,13 @@ function createWindow() {
     win = null;
   });
 
+  function convertIds(data) {
+    return new Buffer(data, 'base64').toString('utf8');
+  }
+
   const oauthConfig = {
-    clientId: userSettings.get('userEditable.spotifyId'),
-    clientSecret: userSettings.get('userEditable.spotifySecret'),
+    clientId: convertIds(userSettings.get('userEditable.spotifyId')),
+    clientSecret: convertIds(userSettings.get('userEditable.spotifySecret')),
     authorizationUrl: 'https://accounts.spotify.com/authorize',
     tokenUrl: 'https://accounts.spotify.com/api/token',
     useBasicAuthorizationHeader: false,
@@ -150,8 +155,10 @@ ipcMain.on('logout', (event, arg) => {
   clearAppData();
 });
 
+// Pass the config that should be changed. The changes will be merged with the existing config and saved.
 ipcMain.on('setSpotifyConfig', (event, arg) => {
-  userSettings.set('userEditable', arg);
+  const settings = _.merge(userSettings.get('userEditable'), arg);
+  userSettings.set('userEditable', settings);
 });
 
 ipcMain.on('getSpotifyConfig', (event, arg) => {

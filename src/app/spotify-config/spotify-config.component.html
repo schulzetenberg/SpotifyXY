@@ -3,18 +3,11 @@
     <div class="col-md-6 my-4">
       <mat-card>
         <mat-card-title>User Settings</mat-card-title>
+        <mat-card-subtitle *ngIf="config && config.spotifyUsername">
+          <strong>User ID</strong>
+          {{ config.spotifyUsername }}
+        </mat-card-subtitle>
         <form class="sm-form" #spotifyForm="ngForm" (ngSubmit)="submitSpotifyConfig(spotifyForm)">
-          <mat-form-field class="full-width">
-            <input matInput placeholder="Spotify Username" name="spotifyUsername" [(ngModel)]="config.spotifyUsername">
-          </mat-form-field>
-
-          <mat-form-field class="full-width">
-            <input matInput placeholder="Spotify ID" name="spotifyId" [(ngModel)]="config.spotifyId">
-          </mat-form-field>
-
-          <mat-form-field class="full-width">
-            <input matInput placeholder="Spotify Secret" name="spotifySecret" [(ngModel)]="config.spotifySecret">
-          </mat-form-field>
           <mat-form-field class="full-width">
             <input matInput type="number" placeholder="Seek Time (Seconds)" name="seekSeconds" [(ngModel)]="config.seekSeconds">
           </mat-form-field>
@@ -40,9 +33,9 @@
         </form>
       </mat-card>
     </div>
-    <div class="col-md-3 my-4">
+    <div class="col-md-3 my-4" *ngIf="isLocal">
       <mat-card>
-        <mat-card-title>Admin</mat-card-title>
+        <mat-card-title>Admin (local Only)</mat-card-title>
         <button mat-raised-button (click)="viewUserSettingsFile()" type="button">
           <i class="material-icons">build</i>
           View User Settings File
