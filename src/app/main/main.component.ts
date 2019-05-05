@@ -14,11 +14,11 @@ import { EnvironmentService } from '../shared/environment.service';
   styleUrls: ['./main.component.scss'],
   providers: [
     SpotifyConfigService,
-    SpotifyService, {
-    provide:
-      'SpotifyConfig',
-      useValue: { }
-    }
+    SpotifyService,
+    {
+      provide: 'SpotifyConfig',
+      useValue: {},
+    },
   ],
 })
 export class MainComponent implements OnInit {
@@ -32,9 +32,8 @@ export class MainComponent implements OnInit {
     private spotifyService: SpotifyService,
     private spotifyConfigService: SpotifyConfigService,
     public snackBar: MatSnackBar,
-    private envService: EnvironmentService,
-  ) {
-  }
+    private envService: EnvironmentService
+  ) {}
 
   ngOnInit() {
     this.isLocal = this.envService.isLocal();
@@ -47,10 +46,13 @@ export class MainComponent implements OnInit {
   }
 
   async getUsername() {
-    const username = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
-      // TODO: Show dialog and ask user to retry
-      this.httpErrorHandler(err);
-    });
+    const username = await this.spotifyService
+      .getPlayStatus()
+      .toPromise()
+      .catch((err) => {
+        // TODO: Show dialog and ask user to retry
+        this.httpErrorHandler(err);
+      });
 
     if (username) {
       this.config.spotifyUsername = username;
@@ -71,93 +73,119 @@ export class MainComponent implements OnInit {
     });
   }
 
-  seek() {
-    this.spotifyService.seek(this.seekTime).subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+  seek(time: number) {
+    this.spotifyService.seek(time).subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   play() {
-    this.spotifyService.startPlayback().subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+    this.spotifyService.startPlayback().subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   previous() {
-    this.spotifyService.previousSong().subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+    this.spotifyService.previousSong().subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   next() {
-    this.spotifyService.nextSong().subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+    this.spotifyService.nextSong().subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   pause() {
-    this.spotifyService.pausePlayback().subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+    this.spotifyService.pausePlayback().subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   async addToPlaylist(playlist: any) {
     let inError = false;
 
-    const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
-      this.httpErrorHandler(err);
-      inError = true;
-    });
+    const playStatusData = await this.spotifyService
+      .getPlayStatus()
+      .toPromise()
+      .catch((err) => {
+        this.httpErrorHandler(err);
+        inError = true;
+      });
 
     if (!inError) {
       const tracks = this.parseUri('track', playStatusData.item.uri);
       const userId = this.parseUri('user', playStatusData.context.uri);
 
       // TODO: Prevent duplicate songs
-      this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(() => {
-      }, (err) => {
-        this.httpErrorHandler(err);
-      });
+      this.spotifyService.addPlaylistTracks(userId, playlist.id, tracks).subscribe(
+        () => {},
+        (err) => {
+          this.httpErrorHandler(err);
+        }
+      );
     }
   }
 
   shuffle() {
     this.shuffleVal = !this.shuffleVal; // Toggle value
 
-    this.spotifyService.shuffle(this.shuffleVal).subscribe(() => {
-    }, (err) => {
-      this.httpErrorHandler(err);
-    });
+    this.spotifyService.shuffle(this.shuffleVal).subscribe(
+      () => {},
+      (err) => {
+        this.httpErrorHandler(err);
+      }
+    );
   }
 
   async playPlaylist(playlist: any) {
     let inError = false;
 
     // First turn on shuffle so we dont play the first song in the playlist as that is usually not desired behavior
-    await this.spotifyService.shuffle(true).toPromise().catch((err) => {
-      this.httpErrorHandler(err);
-      inError = true;
-    });
+    await this.spotifyService
+      .shuffle(true)
+      .toPromise()
+      .catch((err) => {
+        this.httpErrorHandler(err);
+        inError = true;
+      });
 
     if (!inError) {
-      await this.spotifyService.playPlaylist(this.config.spotifyUsername, playlist.id).toPromise().catch((err) => {
-        this.httpErrorHandler(err);
-      });
+      await this.spotifyService
+        .playPlaylist(this.config.spotifyUsername, playlist.id)
+        .toPromise()
+        .catch((err) => {
+          this.httpErrorHandler(err);
+        });
     }
   }
 
   async removeSongFromPlaylist(seek?: boolean) {
     let inError = false;
 
-    const playStatusData = await this.spotifyService.getPlayStatus().toPromise().catch((err) => {
-      this.httpErrorHandler(err);
-      inError = true;
-    });
+    const playStatusData = await this.spotifyService
+      .getPlayStatus()
+      .toPromise()
+      .catch((err) => {
+        this.httpErrorHandler(err);
+        inError = true;
+      });
 
     if (!inError) {
       const tracks = this.parseUri('track', playStatusData.item.uri);
@@ -167,10 +195,13 @@ export class MainComponent implements OnInit {
         const playlistId = this.parseUri('playlist', context.uri);
         const userId = this.parseUri('user', context.uri);
 
-        const removePlaylistData = await this.spotifyService.removePlaylistTracks(userId, playlistId, tracks).toPromise().catch((err) => {
-          this.httpErrorHandler(err);
-          inError = true;
-        });
+        const removePlaylistData = await this.spotifyService
+          .removePlaylistTracks(userId, playlistId, tracks)
+          .toPromise()
+          .catch((err) => {
+            this.httpErrorHandler(err);
+            inError = true;
+          });
 
         if (!inError && !removePlaylistData.snapshot_id) {
           this.openSnackBar('Error removing playlist track');
@@ -179,17 +210,23 @@ export class MainComponent implements OnInit {
         }
 
         if (!inError && seek) {
-          await this.spotifyService.nextSong().toPromise().catch((err) => {
-            this.httpErrorHandler(err);
-            inError = true;
-          });
-
-          if (!inError) {
-            this.spotifyService.seek(this.seekTime).toPromise().then(() => {
-            }).catch((err) => {
+          await this.spotifyService
+            .nextSong()
+            .toPromise()
+            .catch((err) => {
               this.httpErrorHandler(err);
               inError = true;
             });
+
+          if (!inError) {
+            this.spotifyService
+              .seek(this.seekTime)
+              .toPromise()
+              .then(() => {})
+              .catch((err) => {
+                this.httpErrorHandler(err);
+                inError = true;
+              });
           }
         }
       } else {
@@ -212,15 +249,15 @@ export class MainComponent implements OnInit {
   // example uri: 'spotify:user:sczo13au5tgxr1cnsttqasqz5:playlist:1MBIggvHjECvRqnxUa3LX2'
   private parseUri(property: string, uri: string) {
     // We need to add in the index length to only get data found after the index
-    const start = uri.indexOf(property + ':') + property.length + 1;
+    const start = uri.indexOf(`${property}:`) + property.length + 1;
 
     if (start > property.length) {
       const value = uri.substring(start, uri.length).split(':')[0];
       return value;
-    } else {
-      console.log(`Error! Property ${property} ID not found in the URI.`);
-      return '';
     }
+
+    console.log(`Error! Property ${property} ID not found in the URI.`);
+    return '';
   }
 
   removeToken() {
