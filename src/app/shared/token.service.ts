@@ -1,29 +1,29 @@
+// tslint:disable ter-prefer-arrow-callback
 import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/Rx';
+import 'rxjs/Rx'; // tslint:disable-line import-blacklist
 
 @Injectable()
 export class TokenService {
-  constructor(
-    private _electronService: ElectronService,
-  ) {
-  }
+  constructor(private _electronService: ElectronService) {}
 
   logout() {
     this._electronService.ipcRenderer.send('logout', '');
   }
 
   public getToken(replace?: boolean) {
+    // TODO: Remove
+    // tslint:disable-next-line no-this-assignment
     const self = this;
 
     // TODO: Figure out how to use resolve in the context of a observable instead of converting from a promise
-    return Observable.fromPromise(new Promise(
-      function (resolve, reject) {
+    return Observable.fromPromise(
+      new Promise(function(resolve, reject) {
         // TODO: Add error handling and timeouts to the promise
 
         if (replace) {
-            console.log('Replace token!');
+          console.log('Replace token!');
           // Get a new token, even if we already have what appears to be a valid token
           self._electronService.ipcRenderer.send('spotify-oauth');
         } else if (!localStorage.getItem('angular2-spotify-token')) {
@@ -36,7 +36,7 @@ export class TokenService {
           console.log('Expiration:', exp);
           console.log('Now:', now);
 
-          if (!exp || (exp < now)) {
+          if (!exp || exp < now) {
             console.log('Token is expired. Get a new token.');
             self._electronService.ipcRenderer.send('spotify-oauth'); // TODO: Use refresh token to get new auth
           } else {
@@ -60,7 +60,7 @@ export class TokenService {
 
           resolve();
         });
-      }
-    ));
+      })
+    );
   }
 }

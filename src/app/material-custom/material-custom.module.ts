@@ -25,17 +25,17 @@ import {
     MatSnackBarModule,
     MatDialogModule,
   ],
-    exports: [
-      MatButtonModule,
-      MatMenuModule,
-      MatToolbarModule,
-      MatIconModule,
-      MatCardModule,
-      MatInputModule,
-      MatSelectModule,
-      MatSnackBarModule,
-      MatDialogModule,
-    ],
-  declarations: []
+  exports: [
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatCardModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatDialogModule,
+  ],
+  declarations: [],
 })
-export class MaterialCustomModule { }
+export class MaterialCustomModule {}

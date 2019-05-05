@@ -14,11 +14,11 @@ import { EnvironmentService } from '../shared/environment.service';
   styleUrls: ['./spotify-config.component.scss'],
   providers: [
     SpotifyConfigService,
-    SpotifyService, {
-    provide:
-      'SpotifyConfig',
-      useValue: { }
-    }
+    SpotifyService,
+    {
+      provide: 'SpotifyConfig',
+      useValue: {},
+    },
   ],
 })
 export class SpotifyConfigComponent implements OnInit {
@@ -31,8 +31,8 @@ export class SpotifyConfigComponent implements OnInit {
     private router: Router,
     private spotifyConfigService: SpotifyConfigService,
     private spotifyService: SpotifyService,
-    private envService: EnvironmentService,
-  ) { }
+    private envService: EnvironmentService
+  ) {}
 
   submitSpotifyConfig(form: NgForm) {
     const saveData = form.value;
@@ -43,26 +43,30 @@ export class SpotifyConfigComponent implements OnInit {
 
   compareFunc(c1: any, c2: any): boolean {
     return c1 && c2 ? c1.id === c2.id : false;
-}
+  }
 
   getEditablePlaylists() {
     // Spotify API only allows 50 playlists at a time
-    this.spotifyService.getCurrentUserPlaylists({ limit: 50 }).toPromise().then((data) => {
-      const { spotifyUsername } = this.config;
-      const editablePlaylists = [];
+    this.spotifyService
+      .getCurrentUserPlaylists({ limit: 50 })
+      .toPromise()
+      .then((data) => {
+        const { spotifyUsername } = this.config;
+        const editablePlaylists = [];
 
-      data.items.forEach(function(playlist: any) {
-        // We only care about playlists owned by us or collaborative playlists we can edit
-        if ((playlist.owner.id === spotifyUsername) || (playlist.collaborative === true)) {
-          editablePlaylists.push({ name: playlist.name, id: playlist.id });
-        }
+        data.items.forEach((playlist: any) => {
+          // We only care about playlists owned by us or collaborative playlists we can edit
+          if (playlist.owner.id === spotifyUsername || playlist.collaborative === true) {
+            editablePlaylists.push({ name: playlist.name, id: playlist.id });
+          }
+        });
+
+        this.editablePlaylists = editablePlaylists;
+      })
+      .catch((err) => {
+        // TODO: use HTTP Error Handler function
+        console.log(err);
       });
-
-      this.editablePlaylists = editablePlaylists;
-    }).catch((err) => {
-      // TODO: use HTTP Error Handler function
-      console.log(err);
-    });
   }
 
   viewUserSettingsFile() {
@@ -75,5 +79,4 @@ export class SpotifyConfigComponent implements OnInit {
     this.playlists = this.config.favoritePlaylists;
     this.getEditablePlaylists();
   }
-
 }

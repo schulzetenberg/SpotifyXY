@@ -7,29 +7,25 @@ import { DialogLogoutComponent } from './dialog-logout.component';
   moduleId: module.id,
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
   title = 'SpotifyXY';
 
-  constructor(private tokenService: TokenService, public dialog: MatDialog) { }
+  constructor(private tokenService: TokenService, public dialog: MatDialog) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   logout() {
     // Call a dialog to verify the user really wants to clear all app data
     const dialogRef = this.dialog.open(DialogLogoutComponent, {
-      width: '600px'
+      width: '600px',
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.tokenService.logout();
       }
     });
   }
-
 }
-
-

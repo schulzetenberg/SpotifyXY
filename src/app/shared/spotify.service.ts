@@ -1,12 +1,10 @@
 // Original code from: https://raw.githubusercontent.com/carterwilliamson/angular2-spotify/master/angular2-spotify.ts
 // This code has since been modifed to work with electron service
 
-import { Injectable, Inject, Optional } from '@angular/core';
-import { HttpClient, HttpRequest, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable, Inject } from '@angular/core';
+import { HttpClient, HttpRequest, HttpResponse, HttpParams } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
-import { timeout } from 'rxjs/operators';
-import 'rxjs/Rx';
+import 'rxjs/Rx'; // tslint:disable-line import-blacklist
 
 import { TokenService } from './token.service';
 
@@ -47,49 +45,48 @@ export class SpotifyService {
     @Inject('SpotifyConfig') public config: SpotifyConfig,
     private http: HttpClient,
     private _electronService: ElectronService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     config.apiBase = 'https://api.spotify.com/v1';
   }
 
-
   //#region albums
 
   /**
-* Gets an album
-* Pass in album id or spotify uri
-*/
+   * Gets an album
+   * Pass in album id or spotify uri
+   */
   getAlbum(album: string) {
-    album = this.getIdFromUri(album);
+    const albumId = this.getIdFromUri(album);
     return this.api({
       method: 'get',
-      url: `/albums/${album}`
+      url: `/albums/${albumId}`,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   /**
-* Gets albums
-* Pass in comma separated string or array of album ids
-*/
-  getAlbums(albums: string | Array<string>) {
+   * Gets albums
+   * Pass in comma separated string or array of album ids
+   */
+  getAlbums(albums: string | string[]) {
     const albumList = this.mountItemList(albums);
     return this.api({
       method: 'get',
       url: `/albums`,
-      search: { ids: albumList.toString() }
+      search: { ids: albumList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   /**
-* Get Album Tracks
-* Pass in album id or spotify uri
-*/
+   * Get Album Tracks
+   * Pass in album id or spotify uri
+   */
   getAlbumTracks(album: string, options?: SpotifyOptions) {
-    album = this.getIdFromUri(album);
+    const albumId = this.getIdFromUri(album);
     return this.api({
       method: 'get',
-      url: `/albums/${album}/tracks`,
-      search: options
+      url: `/albums/${albumId}/tracks`,
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -98,35 +95,35 @@ export class SpotifyService {
   //#region artists
 
   /**
-* Get an Artist
-*/
+   * Get an Artist
+   */
   getArtist(artist: string) {
-    artist = this.getIdFromUri(artist);
+    const artistId = this.getIdFromUri(artist);
     return this.api({
       method: 'get',
-      url: `/artists/${artist}`
+      url: `/artists/${artistId}`,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   /**
-* Get multiple artists
-*/
-  getArtists(artists: string | Array<string>) {
+   * Get multiple artists
+   */
+  getArtists(artists: string | string[]) {
     const artistList = this.mountItemList(artists);
     return this.api({
       method: 'get',
       url: `/artists/`,
-      search: { ids: artists.toString() }
+      search: { ids: artists.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   // Artist Albums
   getArtistAlbums(artist: string, options?: SpotifyOptions) {
-    artist = this.getIdFromUri(artist);
+    const artistId = this.getIdFromUri(artist);
     return this.api({
       method: 'get',
-      url: `/artists/${artist}/albums`,
-      search: options
+      url: `/artists/${artistId}/albums`,
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -135,23 +132,21 @@ export class SpotifyService {
    * The country: an ISO 3166-1 alpha-2 country code.
    */
   getArtistTopTracks(artist: string, country: string) {
-    artist = this.getIdFromUri(artist);
+    const artistId = this.getIdFromUri(artist);
     return this.api({
       method: 'get',
-      url: `/artists/${artist}/top-tracks`,
-      search: { country: country }
+      url: `/artists/${artistId}/top-tracks`,
+      search: { country },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   getRelatedArtists(artist: string) {
-    artist = this.getIdFromUri(artist);
+    const artistId = this.getIdFromUri(artist);
     return this.api({
       method: 'get',
-      url: `/artists/${artist}/related-artists`
+      url: `/artists/${artistId}/related-artists`,
     }).map((res: HttpResponse<any>) => res.body);
   }
-
-
 
   //#endregion
 
@@ -198,15 +193,15 @@ export class SpotifyService {
   }
 
   getRecommendations(options?: SpotifyOptions) {
-      return this.api({
+    return this.api({
       method: 'get',
       url: `/recommendations`,
       search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  getAvailableGenreSeeds () {
-      return this.api({
+  getAvailableGenreSeeds() {
+    return this.api({
       method: 'get',
       url: `/recommendations/available-genre-seeds`,
     }).map((res: HttpResponse<any>) => res.body);
@@ -216,8 +211,7 @@ export class SpotifyService {
 
   //#region following
 
-  following(type: string, options?: SpotifyOptions) {
-    options = options || {};
+  following(type: string, options: SpotifyOptions = {}) {
     options.type = type;
     return this.api({
       method: 'get',
@@ -226,27 +220,27 @@ export class SpotifyService {
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  follow(type: string, ids: string | Array<string>) {
+  follow(type: string, ids: string | string[]) {
     return this.api({
       method: 'put',
       url: `/me/following`,
-      search: { type: type, ids: ids.toString() },
+      search: { type, ids: ids.toString() },
     });
   }
 
-  unfollow(type: string, ids: string | Array<string>) {
+  unfollow(type: string, ids: string | string[]) {
     return this.api({
       method: 'delete',
       url: `/me/following`,
-      search: { type: type, ids: ids.toString() },
+      search: { type, ids: ids.toString() },
     });
   }
 
-  userFollowingContains(type: string, ids: string | Array<string>) {
+  userFollowingContains(type: string, ids: string | string[]) {
     return this.api({
       method: 'get',
       url: `/me/following/contains`,
-      search: { type: type, ids: ids.toString() },
+      search: { type, ids: ids.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -265,14 +259,13 @@ export class SpotifyService {
     });
   }
 
-  playlistFollowingContains(userId: string, playlistId: string, ids: string | Array<string>) {
+  playlistFollowingContains(userId: string, playlistId: string, ids: string | string[]) {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}/followers/contains`,
       search: { ids: ids.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
-
 
   //#endregion
 
@@ -282,36 +275,36 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/tracks`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  userTracksContains(tracks: string | Array<string>) {
+  userTracksContains(tracks: string | string[]) {
     const trackList = this.mountItemList(tracks);
     return this.api({
       method: 'get',
       url: `/me/tracks/contains`,
-      search: { ids: trackList.toString() }
+      search: { ids: trackList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  saveUserTracks(tracks: string | Array<string>) {
+  saveUserTracks(tracks: string | string[]) {
     const trackList = this.mountItemList(tracks);
 
     return this.api({
       method: 'put',
       url: `/me/tracks`,
-      search: { ids: trackList.toString() }
+      search: { ids: trackList.toString() },
     });
   }
 
-  removeUserTracks(tracks: string | Array<string>) {
+  removeUserTracks(tracks: string | string[]) {
     const trackList = this.mountItemList(tracks);
 
     return this.api({
       method: 'delete',
       url: `/me/tracks`,
-      search: { ids: trackList.toString() }
+      search: { ids: trackList.toString() },
     });
   }
 
@@ -319,37 +312,37 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/me/albums`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  saveUserAlbums(albums: string | Array<string>) {
+  saveUserAlbums(albums: string | string[]) {
     const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'put',
       url: `/me/albums`,
-      search: { ids: albumList.toString() }
+      search: { ids: albumList.toString() },
     });
   }
 
-  removeUserAlbums(albums: string | Array<string>) {
+  removeUserAlbums(albums: string | string[]) {
     const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'delete',
       url: `/me/albums`,
-      search: { ids: albumList.toString() }
+      search: { ids: albumList.toString() },
     });
   }
 
-  userAlbumsContains(albums: string | Array<string>) {
+  userAlbumsContains(albums: string | string[]) {
     const albumList = this.mountItemList(albums);
 
     return this.api({
       method: 'get',
       url: `/me/albums/contains`,
-      search: { ids: albumList.toString() }
+      search: { ids: albumList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -358,7 +351,7 @@ export class SpotifyService {
   //#region personalization
 
   getUserTopArtists(options?: SpotifyOptions) {
-      return this.api({
+    return this.api({
       method: 'get',
       url: `/me/top/artists`,
       search: options,
@@ -366,7 +359,7 @@ export class SpotifyService {
   }
 
   getUserTopTracks(options?: SpotifyOptions) {
-      return this.api({
+    return this.api({
       method: 'get',
       url: `/me/top/tracks`,
       search: options,
@@ -374,7 +367,7 @@ export class SpotifyService {
   }
 
   getUserRecentlyPlayed(options?: SpotifyOptions) {
-      return this.api({
+    return this.api({
       method: 'get',
       url: `/me/player/recently-played`,
       search: options,
@@ -389,12 +382,12 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   getCurrentUserPlaylists(options?: SpotifyOptions) {
-      return this.api({
+    return this.api({
       method: 'get',
       url: `/me/playlists/`,
       search: options,
@@ -405,7 +398,7 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -413,22 +406,22 @@ export class SpotifyService {
     return this.api({
       method: 'get',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  createPlaylist(userId: string, options: { name: string, public?: boolean }) {
+  createPlaylist(userId: string, options: { name: string; public?: boolean }) {
     return this.api({
       method: 'post',
       url: `/users/${userId}/playlists`,
-      body: options
+      body: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  addPlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>, options?: { position: number }) {
+  addPlaylistTracks(userId: string, playlistId: string, tracks: string | string[], options?: { position: number }) {
     const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
     trackList.forEach((value, index) => {
-      trackList[index] = value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value;
+      trackList[index] = value.indexOf('spotify:') === -1 ? `spotify:track:${value}` : value;
     });
 
     const search = { uris: trackList.toString() };
@@ -437,47 +430,51 @@ export class SpotifyService {
     }
 
     return this.api({
+      search,
       method: 'post',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      search: search
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  removePlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>) {
+  removePlaylistTracks(userId: string, playlistId: string, tracks: string | string[]) {
     const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
     const trackUris = [];
 
     trackList.forEach((value, index) => {
       trackUris[index] = {
-        uri: value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value
+        uri: value.indexOf('spotify:') === -1 ? `spotify:track:${value}` : value,
       };
     });
 
     return this.api({
       method: 'delete',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      body: { tracks: trackUris }
+      body: { tracks: trackUris },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  reorderPlaylistTracks(userId: string, playlistId: string, options: { range_start: number, range_length?: number, insert_before: number, snapshot_id?: string }) {
+  reorderPlaylistTracks(
+    userId: string,
+    playlistId: string,
+    options: { range_start: number; range_length?: number; insert_before: number; snapshot_id?: string }
+  ) {
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      body: options
+      body: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  replacePlaylistTracks(userId: string, playlistId: string, tracks: string | Array<string>) {
+  replacePlaylistTracks(userId: string, playlistId: string, tracks: string | string[]) {
     const trackList = Array.isArray(tracks) ? tracks : tracks.split(',');
     trackList.forEach((value, index) => {
-      trackList[index] = value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value;
+      trackList[index] = value.indexOf('spotify:') === -1 ? `spotify:track:${value}` : value;
     });
 
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}/tracks`,
-      search: { uris: trackList.toString() }
+      search: { uris: trackList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -485,7 +482,7 @@ export class SpotifyService {
     return this.api({
       method: 'put',
       url: `/users/${userId}/playlists/${playlistId}`,
-      body: options
+      body: options,
     });
   }
 
@@ -496,7 +493,7 @@ export class SpotifyService {
   getUser(userId: string) {
     return this.api({
       method: 'get',
-      url: `/users/${userId}`
+      url: `/users/${userId}`,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -512,19 +509,18 @@ export class SpotifyService {
   //#region search
 
   /**
-* Search Spotify
-* q = search query
-* type = artist, album or track
-*/
-  search(q: string, type: string, options?: SpotifyOptions) {
-    options = options || {};
+   * Search Spotify
+   * q = search query
+   * type = artist, album or track
+   */
+  search(q: string, type: string, options: SpotifyOptions = {}) {
     options.q = q;
     options.type = type;
 
     return this.api({
       method: 'get',
       url: `/search`,
-      search: options
+      search: options,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
@@ -533,40 +529,39 @@ export class SpotifyService {
   //#region tracks
 
   getTrack(track: string) {
-    track = this.getIdFromUri(track);
+    const trackId = this.getIdFromUri(track);
     return this.api({
       method: 'get',
-      url: `/tracks/${track}`
+      url: `/tracks/${trackId}`,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
-  getTracks(tracks: string | Array<string>) {
+  getTracks(tracks: string | string[]) {
     const trackList = this.mountItemList(tracks);
     return this.api({
-        method: 'get',
-        url: `/tracks/`,
-        search: { ids: trackList.toString() }
+      method: 'get',
+      url: `/tracks/`,
+      search: { ids: trackList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   getTrackAudioAnalysis(track: string) {
-    track = this.getIdFromUri(track);
+    const trackId = this.getIdFromUri(track);
     return this.api({
       method: 'get',
-      url: `/audio-analysis/${track}`,
+      url: `/audio-analysis/${trackId}`,
     }).map((res: HttpResponse<any>) => res.body);
   }
 
   getTrackAudioFeatures(track: string) {
-      track = this.getIdFromUri(track);
-      return this.api({
-        method: 'get',
-        url: `/audio-features/${track}`,
-      }).map((res: HttpResponse<any>) => res.body);
+    const trackId = this.getIdFromUri(track);
+    return this.api({
+      method: 'get',
+      url: `/audio-features/${trackId}`,
+    }).map((res: HttpResponse<any>) => res.body);
   }
 
-
-  getTracksAudioFeatures(tracks: string | Array<string>) {
+  getTracksAudioFeatures(tracks: string | string[]) {
     const trackList = this.mountItemList(tracks);
     return this.api({
       method: 'get',
@@ -574,7 +569,6 @@ export class SpotifyService {
       search: { ids: trackList.toString() },
     }).map((res: HttpResponse<any>) => res.body);
   }
-
 
   //#endregion
 
@@ -652,8 +646,8 @@ export class SpotifyService {
       url: `/me/player/seek`,
       search: {
         position_ms: position_sec * 1000,
-        ...(device_id ? { device_id: device_id } : {}) // Optional
-      }
+        ...(device_id ? { device_id } : {}), // Optional
+      },
     });
   }
 
@@ -665,8 +659,8 @@ export class SpotifyService {
     let httpParams = new HttpParams();
 
     if (obj) {
-      Object.keys(obj).forEach(function (key) {
-           httpParams = httpParams.append(key, obj[key]);
+      Object.keys(obj).forEach((key) => {
+        httpParams = httpParams.append(key, obj[key]);
       });
     }
 
@@ -677,7 +671,7 @@ export class SpotifyService {
     return uri.indexOf('spotify:') === -1 ? uri : uri.split(':')[2];
   }
 
-  private mountItemList(items: string | Array<string>): Array<string> {
+  private mountItemList(items: string | string[]): string[] {
     const itemList = Array.isArray(items) ? items : items.split(',');
     itemList.forEach((value, index) => {
       itemList[index] = this.getIdFromUri(value);
@@ -686,6 +680,8 @@ export class SpotifyService {
   }
 
   private api(requestOptions: HttpRequestOptions) {
+    // TODO: remove self
+    // tslint:disable-next-line no-this-assignment
     const self = this;
 
     const req = new HttpRequest(
@@ -693,15 +689,22 @@ export class SpotifyService {
       self.config.apiBase + requestOptions.url,
       JSON.stringify(requestOptions.body),
       {
-        params: self.queryParams(requestOptions.search)
-      });
+        params: self.queryParams(requestOptions.search),
+      }
+    );
 
     // Before each HTTP request, call getToken function to verify we have a valid auth token
-    return this.tokenService.getToken().flatMap(function() {
-      return self.http.request(req);
-   }).timeout(5000); // Timeout of 5 seconds
+    // tslint:disable-next-line ter-prefer-arrow-callback
+    return (
+      this.tokenService
+        .getToken()
+        // tslint:disable-next-line ter-prefer-arrow-callback
+        .flatMap(function() {
+          return self.http.request(req);
+        })
+        .timeout(5000)
+    ); // Timeout of 5 seconds
   }
 
   //#endregion
-
 }

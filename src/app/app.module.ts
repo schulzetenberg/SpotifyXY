@@ -5,6 +5,7 @@ import '../polyfills';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Injector } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+// tslint:disable-next-line no-duplicate-imports
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -32,6 +33,7 @@ import { TokenService } from './shared/token.service';
 import { DialogLogoutComponent } from './header/dialog-logout.component';
 
 // AoT requires an exported function for factories
+// tslint:disable-next-line function-name
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -47,7 +49,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     FooterComponent,
   ],
   imports: [
-    HttpModule,
+    HttpModule, // tslint:disable-line deprecation
     NgxElectronModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -61,10 +63,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (HttpLoaderFactory),
-        deps: [HttpClient]
-      }
-    })
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
   ],
   providers: [
     ElectronService,
@@ -73,16 +75,16 @@ export function HttpLoaderFactory(http: HttpClient) {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-      deps: []
+      deps: [],
     },
     {
-        provide: HTTP_INTERCEPTORS,
-        useClass: AuthExpiredInterceptor,
-        multi: true,
-        deps: [Injector, TokenService]
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthExpiredInterceptor,
+      multi: true,
+      deps: [Injector, TokenService],
     },
-],
-  bootstrap: [AppComponent ],
+  ],
+  bootstrap: [AppComponent],
   entryComponents: [DialogLogoutComponent],
 })
-export class AppModule { }
+export class AppModule {}
