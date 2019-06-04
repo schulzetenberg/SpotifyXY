@@ -4,9 +4,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpRequest, HttpResponse, HttpParams } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
-import 'rxjs/Rx'; // tslint:disable-line import-blacklist
 
 import { TokenService } from './token.service';
+import { mergeMap } from 'rxjs/operators';
 
 export interface SpotifyConfig {
   clientId: string;
@@ -680,30 +680,19 @@ export class SpotifyService {
   }
 
   private api(requestOptions: HttpRequestOptions) {
-    // TODO: remove self
-    // tslint:disable-next-line no-this-assignment
-    const self = this;
-
     const req = new HttpRequest(
       requestOptions.method || 'get',
-      self.config.apiBase + requestOptions.url,
+      this.config.apiBase + requestOptions.url,
       JSON.stringify(requestOptions.body),
       {
-        params: self.queryParams(requestOptions.search),
+        params: this.queryParams(requestOptions.search),
       }
     );
 
-    // Before each HTTP request, call getToken function to verify we have a valid auth token
-    // tslint:disable-next-line ter-prefer-arrow-callback
-    return (
-      this.tokenService
-        .getToken()
-        // tslint:disable-next-line ter-prefer-arrow-callback
-        .flatMap(function() {
-          return self.http.request(req);
-        })
-        .timeout(5000)
-    ); // Timeout of 5 seconds
+    // Before each HTTP request, call getToken() to verify we have a valid auth token
+    const obs = this.tokenService.getToken().pipe(mergeMap(() => this.http.request(req)));
+
+    return obs;
   }
 
   //#endregion
