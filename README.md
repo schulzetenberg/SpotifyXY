@@ -14,6 +14,7 @@ The UI is built using Angular 6 & [angular material](https://github.com/angular/
 ### Install dependencies
 ```sh
 $ npm i
+$ npm i -g electron@2.0.3
 ```
 ### Run in Development mode
 ```sh
