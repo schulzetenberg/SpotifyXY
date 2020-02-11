@@ -32,7 +32,7 @@
     "e2e": "npm run postinstall:web && npx --no-install -p @angular/cli ng e2e"
   },
   "dependencies": {
-    "bootstrap": "4.1.2",
+    "bootstrap": "4.3.1",
     "electron-oauth2": "3.0.0",
     "electron-store": "2.0.0",
     "fs-extra": "7.0.1",
