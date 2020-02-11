@@ -4,11 +4,11 @@ import * as url from 'url';
 import * as _ from 'lodash';
 import { clearAppData } from './node/storage';
 
-const fs = require('fs');
 const electronOauth2 = require('electron-oauth2');
 const Store = require('electron-store');
 
-let win, serve;
+let win;
+let serve;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
 
@@ -32,30 +32,32 @@ function createWindow() {
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
   const savedWidth = userSettings.get('windowBounds.width');
   const savedHeight = userSettings.get('windowBounds.height');
-  let width, height;
+	let windowWidth;
+	let windowHeight;
 
   if (!userSettings.get('userEditable.rememberWindowSize')) {
-    width = size.width;
-    height = size.height;
+    windowWidth = size.width;
+    windowHeight = size.height;
   } else {
     // Set the window size to the previously saved value, up to the full screen size
-    width = (size.width < savedWidth) ? size.width : savedWidth;
-    height = (size.height < savedHeight) ? size.height : savedHeight;
+    windowWidth = (size.width < savedWidth) ? size.width : savedWidth;
+    windowHeight = (size.height < savedHeight) ? size.height : savedHeight;
   }
 
   // Create the browser window
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width,
-    height,
+    width: windowWidth,
+    height: windowHeight,
     minWidth: 650,
     minHeight: 150
   });
 
   if (serve) {
     require('electron-reload')(__dirname, {
-     electron: require(`${__dirname}/node_modules/electron`)});
+			electron: require(`${__dirname}/node_modules/electron`)
+		});
     win.loadURL('http://localhost:4200');
 
     // If in dev mode, open dev tools at startup
@@ -97,10 +99,10 @@ function createWindow() {
   };
 
   const windowParams = {
-    alwaysOnTop: true,
+    // NOTE: I would like to keep the auth on top of the app, but not above other apps. Need further investigation as 'level' is deprecated
+    // alwaysOnTop: true,
     autoHideMenuBar: true,
     transparent: true,
-    frame: false,
     webPreferences: {
       nodeIntegration: false
     }
