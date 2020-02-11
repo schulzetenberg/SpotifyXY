@@ -9,12 +9,12 @@ SpotifyXY is a modern cross platform desktop app built using [electron 2](https:
 See [releases](https://github.com/schulzetenberg/SpotifyXY/releases) to download the pre-built app (Mac, Linux, Windows)
 
 ### UI
-The UI is built using Angular 6 & [angular material](https://github.com/angular/material2).
+The UI is built using Angular 9 & [angular material](https://github.com/angular/material2).
 
 ### Install dependencies
 ```sh
 $ npm i
-$ npm i -g electron@2.0.3
+$ npm i -g electron@8.0.0
 ```
 ### Run in Development mode
 ```sh

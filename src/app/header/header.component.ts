@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TokenService } from '../shared/token.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+
 import { DialogLogoutComponent } from './dialog-logout.component';
 
 @Component({

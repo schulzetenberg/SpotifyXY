@@ -4,8 +4,9 @@ interface NodeModule {
   id: string;
 }
 
-declare var window: Window;
-interface Window {
-  process: any;
-  require: any;
-}
+// TODO: Is this obsolete after npm package updates?
+// declare var window: Window;
+// interface Window {
+//   process: any;
+//   require: any;
+// }
